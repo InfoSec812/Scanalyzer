@@ -1,7 +1,9 @@
 Scanalyzer
 ==========
 
-A ReSTful service application which will track and scan your network hosts using NMAP and store the results. It will also compare previous results with the current results and potentially generate warning messages about changes to your infrastructure.
+A ReSTful service application which will track and scan your network hosts using NMAP and store the results. (IN PROGRESS)
+It will also compare previous results with the current results. (PLANNED)
+It will generate warning messages about changes to your infrastructure. (PLANNED)
 
 To build the application, make sure that you have Maven >=3.x and run:
 
