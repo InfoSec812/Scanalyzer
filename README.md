@@ -9,7 +9,7 @@ It will generate warning messages about changes to your infrastructure. (PLANNED
 
 ## Building
 
-To build the application, make sure that you have Maven >=3.x and run:
+To build the application, make sure that you have [Maven](http://maven.apache.org/) >= 3.x and run:
 
 ```
 mvn clean package
