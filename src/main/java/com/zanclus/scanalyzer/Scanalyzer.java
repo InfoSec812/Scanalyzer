@@ -38,15 +38,18 @@ public class Scanalyzer {
 	 */
 	public static void main(String[] args) throws Exception {
 
+		// Parse the command-line arguments
 		Init init = new Init(args) ;
 		config = init.getConfig() ;
 
+		// Start up the embedded Jetty Servlet container
 		Server server = new Server(Integer.parseInt(config.get("scanalyzer.port"))) ;
 		ServletContextHandler context = new ServletContextHandler() ;
 		context.setContextPath("/") ;
-		context.setAttribute("args", args);
+		context.setAttribute("config", config);
 		server.setHandler(context) ;
 
+		// Add a ServletContextListener for some shared resources which are expensive to generate
 		context.addEventListener(new WebContext());
 
 		context.addServlet(createJerseyServlet(), "/rest/*") ;
@@ -55,6 +58,8 @@ public class Scanalyzer {
 
 		server.start() ;
 
+		// This MUST be run AFTER the Jetty server starts because it needs access 
+		// to the ServletContextListener's state information
 		startPollingScheduler();
 
 		server.join() ;
@@ -81,7 +86,10 @@ public class Scanalyzer {
 		sched.scheduleJob(jd, trigger) ;
 	}
 
-
+	/**
+	 * Creates a servlet holder containing the Swagger servlet instance
+	 * @return An instance of {@link ServletHolder} containing the Swagger servlet instance
+	 */
 	private static ServletHolder createSwaggerServlet() {
 		ServletHolder swagger = new ServletHolder() ;
 		swagger.setInitParameter("api.version", "1.0.0") ;
@@ -91,11 +99,14 @@ public class Scanalyzer {
 		return swagger;
 	}
 
+	/**
+	 * Creates a servlet holder containing the Jersey servlet instance
+	 * @return An instance of {@link ServletHolder} containing the Jersey servlet instance
+	 */
 	private static ServletHolder createJerseyServlet() {
 		ServletHolder restServlet = new ServletHolder() ;
 		restServlet.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
 		restServlet.setInitParameter("com.sun.jersey.config.property.packages", "com.zanclus.scanalyzer.services;org.codehaus.jackson.jaxrs;com.wordnik.swagger.jersey.listing"); 
-//		restServlet.setInitParameter("com.sun.jersey.config.property.packages", "com.zanclus.scanalyzer.services;org.codehaus.jackson.jaxrs;com.wordnik.swagger.jersey.listing") ;
 		restServlet.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true") ;
 		restServlet.setInitOrder(1) ;
 		restServlet.setServlet(new ServletContainer()) ;

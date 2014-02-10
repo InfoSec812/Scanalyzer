@@ -7,6 +7,8 @@ import java.util.List;
 import com.zanclus.scanalyzer.domain.entities.Scan;
 
 /**
+ * A Data Access Object for CCRUD operations on Scan entities
+ * 
  * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
  *
  */

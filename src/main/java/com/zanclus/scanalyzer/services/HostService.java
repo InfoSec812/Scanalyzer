@@ -33,7 +33,7 @@ import com.zanclus.scanalyzer.domain.entities.PortsCollectionWrapper;
 import com.zanclus.scanalyzer.domain.entities.ScanCollectionWrapper;
 
 /**
- * The JAX-RS enpoints related to Hosts
+ * The JAX-RS endpoints related to Hosts and their associated scans and port histories.
  * 
  * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
  * 

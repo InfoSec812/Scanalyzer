@@ -17,7 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author dphillips
+ * A class to handle loading, parsing, and aggregating the various startup configurations.
+ * 
+ * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
  * 
  */
 public class Init {
@@ -51,7 +53,7 @@ public class Init {
 	}
 
 	/**
-	 * 
+	 * Use Gnu GetOpt to parse command-line arguments.
 	 * @param args
 	 *            The command line arguments passed when the application was
 	 *            started.
@@ -91,6 +93,12 @@ public class Init {
 		}
 	}
 
+	/**
+	 * Load a configuration file if it exists.
+	 * 
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
 	private void loadConfigFile() throws IOException, FileNotFoundException {
 		// Load the configuration from a properties file (if available)
 		Properties configFile = new Properties();

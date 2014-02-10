@@ -6,20 +6,19 @@ package com.zanclus.scanalyzer.listeners;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.zanclus.scanalyzer.Init;
 import com.zanclus.scanalyzer.ScanRunner;
 
 /**
+ * The is a ServletContextListener which set up and stores references to expensive resources like the
+ * application's parsed configuration and Java Persistence {@link EntityManagerFactory}
+ * 
  * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
  *
  */
@@ -36,12 +35,12 @@ public class WebContext implements ServletContextListener {
 	/* (non-Javadoc)
 	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
 	 */
+	@SuppressWarnings("unchecked")   // Because Java 7 still has no ability to check parameterized types.... Booo!!
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		log = LoggerFactory.getLogger(WebContext.class) ;
-		log.info("ServletContextListener loaded.") ;
-		Init init = new Init((String[]) sce.getServletContext().getAttribute("args")) ;
-		config = init.getConfig() ;
+		log.info("ServletContextListener loading.") ;
+		config = (HashMap<String, String>) sce.getServletContext().getAttribute("config") ;
 		emf = Persistence.createEntityManagerFactory("scanalyzer", config) ;
 		scanPool = Executors.newFixedThreadPool(Integer.parseInt(config.get("scanalyzer.threads"))) ;
 	}
