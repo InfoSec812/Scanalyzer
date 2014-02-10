@@ -1,5 +1,6 @@
 package com.zanclus.scanalyzer.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zanclus.scanalyzer.domain.entities.Host;
@@ -13,6 +14,7 @@ import java.util.Date;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import lombok.AllArgsConstructor;
@@ -42,10 +44,12 @@ public class Ports implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	@Column(length=1000000)
 	private String portStatus;
 	private Date scanTime;
 
-	@ManyToOne(cascade=CascadeType.ALL, optional=false)
+	@ManyToOne(cascade=CascadeType.MERGE)
 	private Host host;
 
 	@XmlJavaTypeAdapter(DateAdapter.class)
@@ -53,5 +57,11 @@ public class Ports implements Serializable {
 	@JsonSerialize(using=JacksonDateSerializer.class)
 	public Date getScanTime() {
 		return scanTime ;
+	}
+
+	@JsonBackReference("PORTS")
+	@XmlTransient
+	public Host getHost() {
+		return host ;
 	}
 }
