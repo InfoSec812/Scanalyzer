@@ -55,7 +55,7 @@ public class HostService {
 	}
 
 	@GET
-	@Path("/id/{id : ([^/]*)}")
+	@Path("/id/{id : ([0-9]*)}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Host getHostById(@PathParam("id") Long hostId) {
 		log.info("Processing GET request for host ID '" + hostId + "'");
@@ -64,7 +64,7 @@ public class HostService {
 	}
 
 	@GET
-	@Path("/id/{id : ([^/]*)}/scans")
+	@Path("/id/{id : ([0-9]*)}/scans")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public ScanCollectionWrapper getHostScans(@PathParam("id") Long id, @QueryParam("limit") @DefaultValue("20") int limit, @QueryParam("offset") @DefaultValue("0") int offset) {
 		ScanDAO dao = new ScanDAO() ;
@@ -72,7 +72,7 @@ public class HostService {
 	}
 
 	@GET
-	@Path("/id/{id : ([^/]*)}/portHistory")
+	@Path("/id/{id : ([0-9]*)}/portHistory")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public PortsCollectionWrapper getHostPortHistory(@PathParam("id") Long id, @QueryParam("limit") @DefaultValue("20") int limit, @QueryParam("offset") @DefaultValue("0") int offset) {
 		PortsDAO dao = new PortsDAO() ;
@@ -122,7 +122,7 @@ public class HostService {
 	}
 
 	@DELETE
-	@Path("/id/{id : (.*)$}")
+	@Path("/id/{id : ([0-9]*)$}")
 	public Response deleteHost(@PathParam("id") Long id) throws WebApplicationException {
 		try {
 			HostDAO dao = new HostDAO() ;
@@ -136,7 +136,7 @@ public class HostService {
 	}
 
 	@PUT
-	@Path("/id/{id : (.*)$}")
+	@Path("/id/{id : ([0-9]*)$}")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response updateHost(Host updates) {
