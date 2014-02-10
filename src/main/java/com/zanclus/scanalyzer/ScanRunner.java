@@ -52,16 +52,17 @@ public class ScanRunner extends Thread {
 				}
 				if (persist) {
 					Scan scanResults = Scan.builder()
-							.scanResults(sb.toString()).scanTime(new Date())
+							.scanResults(sb.toString())
+							.scanTime(new Date())
 							.build();
-					ScanDAO sDao = new ScanDAO();
-					log.info("\n\nNMAP OUTPUT:\n\n"
-							+ scanResults.getScanResults() + "\n\n");
-					sDao.addScan(scanResults);
-					HostDAO hDao = new HostDAO();
-					Host updated = hDao.getHostById(target.getId());
-					updated.setLastScanned(scanResults.getScanTime());
-					hDao.updateHost(updated);
+					HostDAO hDao = new HostDAO() ;
+					Host updated = hDao.getHostById(target.getId()) ;
+					updated.setLastScanned(scanResults.getScanTime()) ;
+					updated = hDao.updateHost(updated) ;
+					scanResults.setTarget(updated) ;
+					ScanDAO sDao = new ScanDAO() ;
+					log.info("\n\nNMAP OUTPUT:\n\n" + scanResults.getScanResults() + "\n\n");
+					scanResults = sDao.addScan(scanResults);
 				} else {
 					log.error("\n\nNMAP ERROR:\n\n"
 							+ sb.toString() + "\n\n") ;
@@ -91,7 +92,7 @@ public class ScanRunner extends Thread {
 			Process proc = rt.exec(state.getProp("scanalyzer.nmap.path")+" -sT -O -P0 "+target.getAddress()) ;
 
 			StreamGobbler stdOut = new StreamGobbler(target, proc.getInputStream(), true) ;
-			StreamGobbler stdErr = new StreamGobbler(target, proc.getErrorStream(), true) ;
+			StreamGobbler stdErr = new StreamGobbler(target, proc.getErrorStream(), false) ;
 			
 			stdOut.start() ;
 			stdErr.start() ;
