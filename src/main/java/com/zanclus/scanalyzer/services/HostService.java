@@ -64,7 +64,7 @@ public class HostService {
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public List<Scan> getHostScans(@PathParam("id") Long id) {
 		HostDAO dao = new HostDAO() ;
-		return dao.getHostScans(id) ;
+		return dao.findById(id).getScans() ;
 	}
 
 	@GET
