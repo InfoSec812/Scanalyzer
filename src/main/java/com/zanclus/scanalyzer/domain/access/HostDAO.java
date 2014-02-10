@@ -4,10 +4,8 @@
 package com.zanclus.scanalyzer.domain.access;
 
 import java.util.Date;
-import java.util.List;
 import javax.persistence.NoResultException;
 import com.zanclus.scanalyzer.domain.entities.Host;
-import com.zanclus.scanalyzer.domain.entities.Scan;
 
 /**
  * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
@@ -43,13 +41,5 @@ public class HostDAO extends GenericDAO<Host, Long> {
 		}
 		
 		return newHost ;
-	}
-
-	public List<Scan> getHostScans(Long id) {
-		em.getTransaction().begin() ;
-		List<Scan> retVal = em.find(Host.class, id).getScans() ;
-		em.getTransaction().commit() ;
-	
-		return retVal ;
 	}
 }
