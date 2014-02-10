@@ -10,9 +10,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.zanclus.scanalyzer.domain.access.ScanDAO;
 import com.zanclus.scanalyzer.domain.entities.Scan;
 import com.zanclus.scanalyzer.domain.entities.ScanCollectionWrapper;
@@ -29,7 +26,7 @@ public class ScanService {
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Scan getScanById(@PathParam("id") Long id) {
 		ScanDAO sDao = new ScanDAO() ;
-		return sDao.getScanById(id) ;
+		return sDao.findById(id) ;
 	}
 
 	@GET

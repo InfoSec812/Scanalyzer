@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.services;
 
 import java.net.InetAddress;
@@ -59,7 +56,7 @@ public class HostService {
 	public Host getHostById(@PathParam("id") Long hostId) {
 		log.info("Processing GET request for host ID '" + hostId + "'");
 		HostDAO dao = new HostDAO();
-		return dao.getHostById(hostId);
+		return dao.findById(hostId);
 	}
 
 	@GET
@@ -117,7 +114,7 @@ public class HostService {
 	public Response deleteHost(@PathParam("id") Long id) throws WebApplicationException {
 		try {
 			HostDAO dao = new HostDAO() ;
-			dao.deleteHost(id) ;
+			dao.delete(id) ;
 		} catch (Throwable t) {
 			throw new WebApplicationException(t, Status.NOT_FOUND) ;
 		}
@@ -134,7 +131,7 @@ public class HostService {
 		log.info("Request URL: "+url.getPath());
 		log.info("Processing PUT request for host ID '" + updates.getId() + "'");
 		HostDAO dao = new HostDAO() ;
-		Host updatedHost = dao.updateHost(updates) ;
+		Host updatedHost = dao.update(updates) ;
 		
 		Response retVal = new ResponseBuilderImpl().entity(updatedHost).status(204).build() ;
 		return retVal ;

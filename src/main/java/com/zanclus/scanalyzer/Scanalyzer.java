@@ -20,6 +20,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
+import com.zanclus.scanalyzer.listeners.WebContext;
 
 /**
  * The applications invocation class.
@@ -40,20 +41,22 @@ public class Scanalyzer {
 		Init init = new Init(args) ;
 		config = init.getConfig() ;
 
-		ApplicationState.getInstance(config) ;
-
-		startPollingScheduler();
-
 		Server server = new Server(Integer.parseInt(config.get("scanalyzer.port"))) ;
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS) ;
+		ServletContextHandler context = new ServletContextHandler() ;
 		context.setContextPath("/") ;
+		context.setAttribute("args", args);
 		server.setHandler(context) ;
+
+		context.addEventListener(new WebContext());
 
 		context.addServlet(createJerseyServlet(), "/rest/*") ;
 
 		context.addServlet(createSwaggerServlet(), "/api/*") ;
 
 		server.start() ;
+
+		startPollingScheduler();
+
 		server.join() ;
 	}
 

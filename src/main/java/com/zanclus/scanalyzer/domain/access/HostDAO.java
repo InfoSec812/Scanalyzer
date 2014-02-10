@@ -5,11 +5,7 @@ package com.zanclus.scanalyzer.domain.access;
 
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-
-import com.zanclus.scanalyzer.ApplicationState;
 import com.zanclus.scanalyzer.domain.entities.Host;
 import com.zanclus.scanalyzer.domain.entities.Scan;
 
@@ -17,26 +13,9 @@ import com.zanclus.scanalyzer.domain.entities.Scan;
  * @author <a href="mailto: deven.phillips@gmail.com">Deven Phillips</a>
  *
  */
-public class HostDAO {
-
-	private ApplicationState state = null ;
-
-	public HostDAO() {
-		super() ;
-		state = ApplicationState.getInstance() ;
-	}
-
-	public Host getHostById(Long id) {
-		EntityManager em = state.getEntityManager() ;
-		em.getTransaction().begin() ;
-		Host retVal = em.find(Host.class, id) ;
-		em.getTransaction().commit() ;
-	
-		return retVal ;
-	}
+public class HostDAO extends GenericDAO<Host, Long> {
 
 	public Host getHostByAddress(byte[] address) {
-		EntityManager em = state.getEntityManager() ;
 		em.getTransaction().begin() ;
 		Host retVal;
 		try {
@@ -56,7 +35,6 @@ public class HostDAO {
 		newHost.setAddress(address) ;
 
 		try {
-			EntityManager em = state.getEntityManager() ;
 			em.getTransaction().begin() ;
 			em.persist(newHost) ;
 			em.getTransaction().commit() ;
@@ -67,24 +45,7 @@ public class HostDAO {
 		return newHost ;
 	}
 
-	public Host updateHost(Host updated) {
-		EntityManager em = state.getEntityManager() ;
-		em.getTransaction().begin() ;
-		Host retVal = em.merge(updated) ;
-		em.getTransaction().commit() ;
-		
-		return retVal  ;
-	}
-
-	public void deleteHost(Long id) {
-		EntityManager em = state.getEntityManager() ;
-		em.getTransaction().begin() ;
-		em.remove(em.find(Host.class, id)) ;
-		em.getTransaction().commit() ;
-	}
-
 	public List<Scan> getHostScans(Long id) {
-		EntityManager em = state.getEntityManager() ;
 		em.getTransaction().begin() ;
 		List<Scan> retVal = em.find(Host.class, id).getScans() ;
 		em.getTransaction().commit() ;
