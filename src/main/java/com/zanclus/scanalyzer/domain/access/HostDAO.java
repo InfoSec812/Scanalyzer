@@ -8,6 +8,8 @@ import javax.persistence.NoResultException;
 import com.zanclus.scanalyzer.domain.entities.Host;
 
 /**
+ * A Data Access Object for CCRUD operations on Host entities
+ * 
  * @author <a href="mailto: deven.phillips@gmail.com">Deven Phillips</a>
  *
  */

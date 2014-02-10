@@ -20,7 +20,8 @@ import com.zanclus.scanalyzer.domain.entities.Scan;
 import com.zanclus.scanalyzer.listeners.WebContext;
 
 /**
- * This is the base class to run an NMAP scan and return the results
+ * This is the base class to run an NMAP scan and store the results
+ * 
  * @author <a href="mailto: deven.phillips@gmail.com">Deven Phillips</a>
  *
  */
