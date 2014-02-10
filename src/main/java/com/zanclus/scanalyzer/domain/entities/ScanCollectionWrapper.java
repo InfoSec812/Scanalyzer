@@ -11,6 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Stupid collection serialization DTO - This is 2014 already, why do we need this shit!
+ * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ *
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
