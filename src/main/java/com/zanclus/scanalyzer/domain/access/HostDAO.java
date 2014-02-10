@@ -70,10 +70,7 @@ public class HostDAO {
 	public Host updateHost(Host updated) {
 		EntityManager em = state.getEntityManager() ;
 		em.getTransaction().begin() ;
-		Host retVal = em.find(Host.class, updated.getId()) ;
-		if (updated.getActive()!=null) {
-			retVal.setActive(updated.getActive()) ;
-		}
+		Host retVal = em.merge(updated) ;
 		em.getTransaction().commit() ;
 		
 		return retVal  ;

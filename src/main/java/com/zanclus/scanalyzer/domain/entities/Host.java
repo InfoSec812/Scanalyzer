@@ -2,13 +2,12 @@ package com.zanclus.scanalyzer.domain.entities;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,14 +18,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zanclus.scanalyzer.ApplicationState;
 import com.zanclus.scanalyzer.ScanRunner;
-
+import com.zanclus.scanalyzer.serialization.DateAdapter;
+import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
 import lombok.Data;
 
 @Data
@@ -54,7 +54,7 @@ public class Host {
 	@Column(nullable=false)
 	private Boolean active = Boolean.TRUE ;
 
-	@OneToMany(mappedBy="target")
+	@OneToMany(mappedBy="target", fetch=FetchType.LAZY)
 	private List<Scan> scans = new ArrayList<>() ;
 
 	@XmlAttribute(name="id")
@@ -76,21 +76,19 @@ public class Host {
 	}
 
 	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	@JsonValue
-	public String getAdded() {
-		return added==null?null:SimpleDateFormat.getDateTimeInstance().format(added) ;
+	@JsonSerialize(using=JacksonDateSerializer.class)
+	public Date getAdded() {
+		return added ;
 	}
 
 	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	@JsonValue
-	public String getLastScanned() {
-		return lastScanned==null?null:SimpleDateFormat.getDateTimeInstance().format(lastScanned) ;
-	}
-
-	@XmlElementWrapper(name="scans")
-	@XmlElement(name="scan")
-	public List<Scan> getScans() {
-		return this.scans ;
+	@JsonSerialize(using=JacksonDateSerializer.class)
+	public Date getLastScanned() {
+		return lastScanned ;
 	}
 
 	/**
