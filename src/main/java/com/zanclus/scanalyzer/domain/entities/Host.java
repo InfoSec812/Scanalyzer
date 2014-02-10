@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,8 +19,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -27,6 +31,7 @@ import com.zanclus.scanalyzer.ApplicationState;
 import com.zanclus.scanalyzer.ScanRunner;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
+
 import lombok.Data;
 
 @Data
@@ -89,6 +94,13 @@ public class Host {
 	@JsonSerialize(using=JacksonDateSerializer.class)
 	public Date getLastScanned() {
 		return lastScanned ;
+	}
+
+	@XmlElementWrapper(name="scans")
+	@XmlElement(name="scan")
+	@JsonManagedReference("SCANS")
+	public List<Scan> getScans() {
+		return scans ;
 	}
 
 	/**
