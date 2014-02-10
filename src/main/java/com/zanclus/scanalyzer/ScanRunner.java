@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -46,9 +48,9 @@ public class ScanRunner extends Thread {
 
 		public void run() {
 			StringBuilder nmapOutput = new StringBuilder() ;
-			StringBuilder ports = null ;
+			ArrayList<String> ports = null ;
 			if (persist) {
-				ports = new StringBuilder() ;
+				ports = new ArrayList<>() ;
 			}
 
 			// try/with - Such awesome, very technology
@@ -57,9 +59,10 @@ public class ScanRunner extends Thread {
 				while ((line = br.readLine())!=null) {
 					nmapOutput.append(line) ;
 					nmapOutput.append("\n") ;
-					if (persist && line.matches("^[0-9]{1,3}/")) {
-						ports.append(line) ;
-						ports.append("\n") ;
+					if (persist && line.matches("^[0-9]{1,5}+/(tcp|udp).*$")) {
+						if (line.trim().length()>0) {
+							ports.add(line) ;
+						}
 					}
 				}
 				if (persist) {
@@ -70,10 +73,25 @@ public class ScanRunner extends Thread {
 					HostDAO hDao = new HostDAO() ;
 					Host updated = hDao.findById(target.getId()) ;
 					updated.setLastScanned(scanResults.getScanTime()) ;
-					updated = hDao.update(updated) ;
+					hDao.update(updated) ;
 					scanResults.setTarget(updated) ;
-					Ports portSet = Ports.builder().host(updated).scanTime(scanResults.getScanTime()).portStatus(ports.toString()).build() ;
+					
+					// Sort the port lines for later comparison
+					// This would be a great place for Java 8's Lambdas!!!
+					Collections.sort(ports) ;
+					StringBuilder sb = new StringBuilder() ;
+					for (String portLine: ports) {
+						sb.append(portLine) ;
+						sb.append("\n") ;
+					}
+
+					// Save the ports lines
+					Ports portSet = Ports.builder()
+									.scanTime(scanResults.getScanTime())
+									.portStatus(sb.toString())
+									.build() ;
 					PortsDAO pDao = new PortsDAO() ;
+					portSet.setHost(updated) ;
 					pDao.create(portSet) ;
 					ScanDAO sDao = new ScanDAO() ;
 					log.info("\n\nNMAP OUTPUT:\n\n" + scanResults.getScanResults() + "\n\n");

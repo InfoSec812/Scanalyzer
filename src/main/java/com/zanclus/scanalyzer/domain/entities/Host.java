@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.PostPersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -21,6 +23,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -61,6 +64,10 @@ public class Host {
 	@OneToMany(mappedBy="target", fetch=FetchType.LAZY)
 	private List<Scan> scans = new ArrayList<>() ;
 
+	@OneToMany(mappedBy="host", fetch=FetchType.LAZY)
+	@OrderBy("scanTime ASC")
+	private List<Ports> portHistory = new ArrayList<>() ;
+
 	@XmlAttribute(name="id")
 	@JsonValue
 	public Long getId() {
@@ -100,6 +107,13 @@ public class Host {
 	@JsonManagedReference("SCANS")
 	public List<Scan> getScans() {
 		return scans ;
+	}
+
+	@XmlElementWrapper(name="portHistory")
+	@XmlElement(name="ports")
+	@JsonManagedReference("PORTS")
+	public List<Ports> getPortHistory() {
+		return portHistory ;
 	}
 
 	/**

@@ -27,6 +27,7 @@ import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.zanclus.scanalyzer.domain.access.HostDAO;
 import com.zanclus.scanalyzer.domain.entities.Host;
 import com.zanclus.scanalyzer.domain.entities.Scan;
+import com.zanclus.scanalyzer.domain.entities.ScanCollectionWrapper;
 
 /**
  * The JAX-RS enpoints related to Hosts
@@ -62,9 +63,9 @@ public class HostService {
 	@GET
 	@Path("/id/{id : ([^/]*)}/scans")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public List<Scan> getHostScans(@PathParam("id") Long id) {
+	public ScanCollectionWrapper getHostScans(@PathParam("id") Long id) {
 		HostDAO dao = new HostDAO() ;
-		return dao.findById(id).getScans() ;
+		return new ScanCollectionWrapper(dao.findById(id).getScans()) ;
 	}
 
 	@GET
