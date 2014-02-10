@@ -2,16 +2,17 @@ package com.zanclus.scanalyzer.services;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -25,8 +26,10 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.zanclus.scanalyzer.domain.access.HostDAO;
+import com.zanclus.scanalyzer.domain.access.PortsDAO;
+import com.zanclus.scanalyzer.domain.access.ScanDAO;
 import com.zanclus.scanalyzer.domain.entities.Host;
-import com.zanclus.scanalyzer.domain.entities.Scan;
+import com.zanclus.scanalyzer.domain.entities.PortsCollectionWrapper;
 import com.zanclus.scanalyzer.domain.entities.ScanCollectionWrapper;
 
 /**
@@ -63,9 +66,17 @@ public class HostService {
 	@GET
 	@Path("/id/{id : ([^/]*)}/scans")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public ScanCollectionWrapper getHostScans(@PathParam("id") Long id) {
-		HostDAO dao = new HostDAO() ;
-		return new ScanCollectionWrapper(dao.findById(id).getScans()) ;
+	public ScanCollectionWrapper getHostScans(@PathParam("id") Long id, @QueryParam("limit") @DefaultValue("20") int limit, @QueryParam("offset") @DefaultValue("0") int offset) {
+		ScanDAO dao = new ScanDAO() ;
+		return new ScanCollectionWrapper(dao.getPagedScansByHostId(id, limit, offset)) ;
+	}
+
+	@GET
+	@Path("/id/{id : ([^/]*)}/portHistory")
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public PortsCollectionWrapper getHostPortHistory(@PathParam("id") Long id, @QueryParam("limit") @DefaultValue("20") int limit, @QueryParam("offset") @DefaultValue("0") int offset) {
+		PortsDAO dao = new PortsDAO() ;
+		return new PortsCollectionWrapper(dao.getPagedPortsHistoryByHostId(id, limit, offset)) ;
 	}
 
 	@GET

@@ -15,9 +15,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
@@ -38,24 +41,50 @@ import lombok.experimental.Builder;
 @NoArgsConstructor
 @AllArgsConstructor
 @XmlRootElement(name="scan")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlType(propOrder={"id", "hostId", "scanTime", "scanResults"})
 public class Scan {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	@XmlAttribute(name="id")
 	private Long id ;
 
 	@Column(name="scan_time", nullable=false, updatable=false, insertable=true)
-	@XmlJavaTypeAdapter(DateAdapter.class)
-	@JsonSerialize(using=JacksonDateSerializer.class)
 	private Date scanTime = new Date() ;
 
 	@Column(name="scan_results", length=1000000, nullable=false, updatable=false, insertable=true)
 	private String scanResults = null ;
 
 	@ManyToOne(cascade = CascadeType.MERGE)
-	@JsonBackReference("SCANS")
 	@XmlTransient
 	private Host target ;
+
+	@XmlAttribute(name="id")
+	public Long getId() {
+		return id ;
+	}
+
+	@XmlAttribute(name="scanTime")
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	@JsonSerialize(using=JacksonDateSerializer.class)
+	public Date getScanTime() {
+		return scanTime ;
+	}
+
+	@XmlValue
+	public String getScanResults() {
+		return scanResults ;
+	}
+
+	@JsonProperty(value="hostId")
+	@XmlAttribute(name="hostId")
+	public Long getHostId() {
+		return target.getId() ;
+	}
+
+	@XmlTransient
+	@JsonIgnore
+	public Host getTarget() {
+		return target ;
+	}
 }

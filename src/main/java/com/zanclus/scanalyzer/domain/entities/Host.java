@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,11 +19,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -102,18 +99,25 @@ public class Host {
 		return lastScanned ;
 	}
 
-	@XmlElementWrapper(name="scans")
-	@XmlElement(name="scan")
-	@JsonManagedReference("SCANS")
+
+	@XmlTransient
 	public List<Scan> getScans() {
 		return scans ;
 	}
 
-	@XmlElementWrapper(name="portHistory")
-	@XmlElement(name="ports")
-	@JsonManagedReference("PORTS")
+	@XmlTransient
 	public List<Ports> getPortHistory() {
 		return portHistory ;
+	}
+
+	@XmlElement(name="scans")
+	public String getScanReference() {
+		return "/rest/hosts/id/"+this.id+"/scans" ;
+	}
+
+	@XmlElement(name="portHistory")
+	public String getPortsReference() {
+		return "/rest/hosts/id/"+this.id+"/portHistory" ;
 	}
 
 	/**
