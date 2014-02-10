@@ -4,9 +4,20 @@
 package com.zanclus.scanalyzer ;
 
 import java.util.HashMap;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.impl.StdSchedulerFactory;
+
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
 
@@ -29,6 +40,10 @@ public class Scanalyzer {
 		Init init = new Init(args) ;
 		config = init.getConfig() ;
 
+		ApplicationState.getInstance(config) ;
+
+		startPollingScheduler();
+
 		Server server = new Server(Integer.parseInt(config.get("scanalyzer.port"))) ;
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS) ;
 		context.setContextPath("/") ;
@@ -38,10 +53,29 @@ public class Scanalyzer {
 
 		context.addServlet(createSwaggerServlet(), "/api/*") ;
 
-		ApplicationState.getInstance(config) ;
-
 		server.start() ;
 		server.join() ;
+	}
+
+	/**
+	 * Starts the Quartz scheduler and sets it running the poller job every 1 minute
+	 * @throws SchedulerException
+	 */
+	private static void startPollingScheduler() throws SchedulerException {
+		SchedulerFactory sf = new StdSchedulerFactory() ;
+		Scheduler sched = sf.getScheduler() ;
+		sched.start() ;
+		JobDetail jd = JobBuilder.newJob(ScanPoller.class).build() ;
+		Trigger trigger = TriggerBuilder
+								.newTrigger()
+								.withIdentity("pollTrigger")
+								.withSchedule(
+										SimpleScheduleBuilder
+											.simpleSchedule()
+											.withIntervalInMinutes(1)
+											.repeatForever())
+								.build() ;
+		sched.scheduleJob(jd, trigger) ;
 	}
 
 
