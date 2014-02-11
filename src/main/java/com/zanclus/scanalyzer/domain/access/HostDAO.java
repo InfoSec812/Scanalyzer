@@ -7,7 +7,7 @@ import com.zanclus.scanalyzer.domain.entities.Host;
 /**
  * A Data Access Object for CCRUD operations on Host entities
  * 
- * @author <a href="mailto: deven.phillips@gmail.com">Deven Phillips</a>
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  *
  */
 public class HostDAO extends GenericDAO<Host, Long> {

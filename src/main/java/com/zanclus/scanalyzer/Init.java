@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A class to handle loading, parsing, and aggregating the various startup configurations.
  * 
- * @author <a href="mailto: deven.phillips@gmail.com">Deven Phillips</a>
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  * 
  */
 public class Init {
