@@ -48,6 +48,10 @@ public class Init {
 		System.out
 				.println("	--threads=<thread count> || -t <thread count>      The number of concurrent scanning threads which can run (defaults to 5).");
 		System.out
+				.println("	--mailuser=<username> || -u <username>             A username with which to authenticate for sending e-mail.");
+		System.out
+				.println("	--mailpass=<password> || -w <password>             A password with which to authenticate for sending e-mail.");
+		System.out
 				.println("	--help || -h                                       Shows this help text.");
 		System.exit(2);
 	}
@@ -59,36 +63,42 @@ public class Init {
 	 *            started.
 	 */
 	private void parseArgs(String[] args) {
-		LongOpt[] longopts = new LongOpt[5];
+		LongOpt[] longopts = new LongOpt[7];
 		longopts[0] = new LongOpt("port", LongOpt.REQUIRED_ARGUMENT, null, 'p');
 		longopts[1] = new LongOpt("bind", LongOpt.REQUIRED_ARGUMENT, null, 'b');
-		longopts[2] = new LongOpt("threads", LongOpt.REQUIRED_ARGUMENT, null,
-				't');
-		longopts[3] = new LongOpt("config", LongOpt.REQUIRED_ARGUMENT, null,
-				'c');
-		longopts[4] = new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h');
+		longopts[2] = new LongOpt("threads", LongOpt.REQUIRED_ARGUMENT, null, 't');
+		longopts[3] = new LongOpt("mailuser", LongOpt.REQUIRED_ARGUMENT, null, 'u');
+		longopts[4] = new LongOpt("mailpass", LongOpt.REQUIRED_ARGUMENT, null, 'w');
+		longopts[5] = new LongOpt("config", LongOpt.REQUIRED_ARGUMENT, null, 'c');
+		longopts[6] = new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h');
 		Getopt g = new Getopt("scanalyzer", args, "b:p:t:", longopts);
 		int c = 0;
 		while ((c = g.getopt()) != -1) {
 			switch (c) {
-			case 'b':
-				config.put("scanalyzer.bind", g.getOptarg());
-				break;
-			case 'p':
-				config.put("scanalyzer.port", g.getOptarg());
-				break;
-			case 't':
-				config.put("scanalyzer.threads", g.getOptarg());
-				break;
-			case 'c':
-				config.put("scanalyzer.config", g.getOptarg());
-				break;
-			case 'h':
-				printUsage();
-				break;
-			default:
-				System.out.println("Invalid argument '" + g.getOptopt() + "'");
-				printUsage();
+				case 'b':
+					config.put("scanalyzer.bind", g.getOptarg());
+					break;
+				case 'p':
+					config.put("scanalyzer.port", g.getOptarg());
+					break;
+				case 't':
+					config.put("scanalyzer.threads", g.getOptarg());
+					break;
+				case 'c':
+					config.put("scanalyzer.config", g.getOptarg());
+					break;
+				case 'u':
+					config.put("mail.username", g.getOptarg());
+					break;
+				case 'w':
+					config.put("mail.password", g.getOptarg());
+					break;
+				case 'h':
+					printUsage();
+					break;
+				default:
+					System.out.println("Invalid argument '" + g.getOptopt() + "'");
+					printUsage();
 			}
 		}
 	}
