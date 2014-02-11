@@ -61,7 +61,7 @@ public class HostService {
 	}
 
 	@GET
-	@Path("/id/{id : ([0-9]*)}")
+	@Path("/{id : ([0-9]*)}")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	@ApiOperation(value="Find a Host by ID")
 	@ApiResponses(value = {
@@ -75,7 +75,7 @@ public class HostService {
 	}
 
 	@GET
-	@Path("/id/{id : ([0-9]*)}/scans")
+	@Path("/{id : ([0-9]*)}/scans")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	@ApiOperation(value="Get the scans for a given host", notes="This is a paginated endpoint which defaults to grabbing only the first 20 records for a given host.")
 	@ApiResponses(value = {
@@ -90,9 +90,9 @@ public class HostService {
 	}
 
 	@GET
-	@Path("/id/{id : ([0-9]*)}/portHistory")
+	@Path("/{id : ([0-9]*)}/portHistory")
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	@ApiOperation(value="Get the posts history for a given host", notes="This is a paginated endpoint which defaults to grabbing only the first 20 records for a given host.")
+	@ApiOperation(value="Get the ports history for a given host", notes="This is a paginated endpoint which defaults to grabbing only the first 20 records for a given host.")
 	@ApiResponses(value = {
 			@ApiResponse(code=404, message="Host not found"), 
 			@ApiResponse(code=400, message="Invalid ID supplied")})
@@ -138,25 +138,29 @@ public class HostService {
 		if (address == null) {
 			log.error("Address is NULL");
 		}
-		byte[] inetAddress = null;
-		try {
-			inetAddress = InetAddress.getByName(address).getAddress();
-		} catch (UnknownHostException e) {
-			throw new WebApplicationException(e, Status.BAD_REQUEST);
-		}
 
 		HostDAO dao = new HostDAO();
 		Host retVal = null;
 		try {
-			retVal = dao.addHost(inetAddress);
+			retVal = dao.addHost(address) ;
 		} catch (Exception e) {
 			throw new WebApplicationException(e, Status.CONFLICT);
 		}
 		return retVal;
 	}
 
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	@ApiOperation(value="Add a new host to the database using it's Internet address")
+	@ApiResponses(value = {
+			@ApiResponse(code=409, message="Host with that address already exists in the database.")})
+	public Host addHost(Host host) {
+		HostDAO dao = new HostDAO() ;
+		return dao.create(host) ;
+	}
+
 	@DELETE
-	@Path("/id/{id : ([0-9]*)$}")
+	@Path("/{id : ([0-9]*)$}")
 	@ApiOperation(value="Delete the host identified by the given ID")
 	@ApiResponses(value = {
 			@ApiResponse(code=202, message="Host was successfully deleted."),
@@ -175,7 +179,6 @@ public class HostService {
 	}
 
 	@PUT
-	@Path("/id/{id : ([0-9]*)$}")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@ApiOperation(value="Update an existing host's record.")

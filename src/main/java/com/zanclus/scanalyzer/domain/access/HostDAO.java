@@ -1,7 +1,10 @@
 package com.zanclus.scanalyzer.domain.access;
 
+import java.net.UnknownHostException;
 import java.util.Date;
+
 import javax.persistence.NoResultException;
+
 import com.zanclus.scanalyzer.domain.entities.Host;
 
 /**
@@ -34,8 +37,9 @@ public class HostDAO extends GenericDAO<Host, Long> {
 	 * Add a new {@link Host} entity by it's unique IP address
 	 * @param address A {@link String} representation of either an IPv4 or IPv6 address
 	 * @return The {@link Host} entity which has that address associated with it.
+	 * @throws UnknownHostException 
 	 */
-	public Host addHost(byte[] address) {
+	public Host addHost(String address) throws UnknownHostException {
 		Host newHost = new Host() ;
 		newHost.setActive(true) ;
 		newHost.setAdded(new Date()) ;

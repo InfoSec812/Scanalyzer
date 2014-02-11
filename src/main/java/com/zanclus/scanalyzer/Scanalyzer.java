@@ -25,8 +25,8 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
-import com.zanclus.scanalyzer.filters.CorsFilter;
 import com.zanclus.scanalyzer.listeners.WebContext;
+import com.zanclus.scanalyzer.servlets.StaticContentServlet;
 
 /**
  * The applications invocation class.
@@ -61,6 +61,8 @@ public class Scanalyzer {
 		context.addServlet(createJerseyServlet(), "/rest/*") ;
 
 		context.addServlet(createSwaggerServlet(), "/api/*") ;
+
+		context.addServlet(createStaticServlet(), "/static/*") ;
 
 		FilterHolder corsFilter = new FilterHolder(new CrossOriginFilter()) ;
 		corsFilter.setInitParameter("allowedOrigins", "*") ;
@@ -124,4 +126,9 @@ public class Scanalyzer {
 		return restServlet;
 	}
 
+	private static ServletHolder createStaticServlet() {
+		ServletHolder staticServlet = new ServletHolder() ;
+		staticServlet.setServlet(new StaticContentServlet());
+		return staticServlet ;
+	}
 }

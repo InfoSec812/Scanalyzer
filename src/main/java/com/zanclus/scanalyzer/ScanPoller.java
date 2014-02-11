@@ -47,7 +47,7 @@ public class ScanPoller implements Job {
 		cal.add(GregorianCalendar.SECOND, (0-interval)) ;
 
 		em.getTransaction().begin() ;
-		List<Host> hostList = em.createQuery("FROM Host WHERE lastScanned<=:cutoff OR lastScanned IS NULL", Host.class).setParameter("cutoff", cal.getTime()).getResultList() ;
+		List<Host> hostList = em.createQuery("FROM Host h WHERE (h.lastScanned<=:cutoff OR h.lastScanned IS NULL) AND h.active=true", Host.class).setParameter("cutoff", cal.getTime()).getResultList() ;
 		em.getTransaction().commit() ;
 
 		for (Host host: hostList) {
