@@ -44,14 +44,8 @@ scanalyzer [-c <config file>] [-b <bind address>] [-p <bind port>] [-t <thread c
 For an example of ALL of the config file options, look at [scanalyzer.properties](src/main/resources/scanalyzer.properties)
 
 
-Once the application is running, add a host using cURL like this:
+Once the application is running, you can access the Swagger API interface at:
 
 ```
-curl -H "Accept: application/xml" -H "Content-Type: application/xml" -X POST "http://<host>:<port>/rest/host/address/192.168.1.1"
-```
-
-After a few seconds the first scan will have run and you can view all of a host's scans with the following request:
-
-```
-curl -H "Accept: application/xml" -X GET "http://<host>:<port>/rest/scan/host/{host id}"
+http://<host address>:<port>/static/
 ```
