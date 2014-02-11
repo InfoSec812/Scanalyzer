@@ -25,7 +25,7 @@ public class PortsDAO extends GenericDAO<Ports, Long> {
 	 */
 	public List<Ports> getPagedPortsHistoryByHostId(Long hostId, int limit, int offset) {
 		em.getTransaction().begin() ;
-		List<Ports> retVal = em.createQuery("FROM Ports p WHERE p.host.id=:hostId", Ports.class)
+		List<Ports> retVal = em.createQuery("FROM Ports p WHERE p.host.id=:hostId ORDER BY p.scanTime DESC", Ports.class)
 								.setParameter("hostId", hostId)
 								.setFirstResult(offset)
 								.setMaxResults(limit)
