@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.domain.access;
 
 import java.util.Date;
@@ -15,6 +12,11 @@ import com.zanclus.scanalyzer.domain.entities.Host;
  */
 public class HostDAO extends GenericDAO<Host, Long> {
 
+	/**
+	 * Get the {@link Host} entity by it's unique IP address
+	 * @param address A {@link String} representation of either an IPv4 or IPv6 address
+	 * @return The {@link Host} entity which has that address associated with it.
+	 */
 	public Host getHostByAddress(byte[] address) {
 		em.getTransaction().begin() ;
 		Host retVal;
@@ -28,6 +30,11 @@ public class HostDAO extends GenericDAO<Host, Long> {
 		return retVal ;
 	}
 
+	/**
+	 * Add a new {@link Host} entity by it's unique IP address
+	 * @param address A {@link String} representation of either an IPv4 or IPv6 address
+	 * @return The {@link Host} entity which has that address associated with it.
+	 */
 	public Host addHost(byte[] address) {
 		Host newHost = new Host() ;
 		newHost.setActive(true) ;
