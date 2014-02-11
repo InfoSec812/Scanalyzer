@@ -35,14 +35,14 @@ import com.zanclus.scanalyzer.listeners.WebContext;
 /**
  * This is the base class to run an NMAP scan and store the results
  * 
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="mailto: deven.phillips@gmail.com">Deven Phillips</a>
  *
  */
 public class ScanRunner extends Thread {
 
 	/**
 	 * This class captures the STDOUT from the NMAP command in a separate thread and persists it to the database.
-	 * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+	 * @author <a href="mailto: deven.phillips@gmail.com">Deven Phillips</a>
 	 *
 	 */
 	private class StreamGobbler extends Thread {

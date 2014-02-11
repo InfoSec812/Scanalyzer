@@ -8,7 +8,7 @@ import com.zanclus.scanalyzer.listeners.WebContext;
 /**
  * A parameterized GenericDAO class which handles all of the common actions needed for any entity
  * 
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="mailto: deven.phillips@gmail.com">Deven Phillips</a>
  *
  */
 public class GenericDAO<T, PK extends Serializable> {

@@ -11,7 +11,7 @@ import com.zanclus.scanalyzer.domain.entities.Scan;
 /**
  * A Data Access Object for CCRUD operations on Scan entities
  * 
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="mailto: deven.phillips@gmail.com">Deven Phillips</a>
  *
  */
 public class ScanDAO extends GenericDAO<Scan, Long> {

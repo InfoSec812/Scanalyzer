@@ -24,7 +24,7 @@ import com.zanclus.scanalyzer.listeners.WebContext;
 
 /**
  * The applications invocation class.
- * @author <a href="mailto:***REMOVED***">Deven Phillips</a>
+ * @author <a href="mailto:deven.phillips@gmail.com">Deven Phillips</a>
  *
  */
 public class Scanalyzer {
