@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,9 +23,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.zanclus.scanalyzer.ScanRunner;
 import com.zanclus.scanalyzer.listeners.WebContext;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
@@ -38,31 +42,39 @@ import lombok.Data;
 @Table(name="HOSTS")
 @XmlRootElement(name="host")
 @JsonRootName("host")
+@ApiModel(value="A host represents a single address which is accessible either on the local network or the Internet")
 public class Host {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@ApiModelProperty(value="The unique ID for this host", required=true)
 	private Long id ;
 
 	@Column(unique=true)
+	@ApiModelProperty(value="The Internet address for this host", required=true)
 	private byte[] address = new byte[128] ;
 
 	@Column(nullable=false, updatable=false)
 	@Temporal(TemporalType.TIMESTAMP)
+	@ApiModelProperty(value="The date that this host was added", required=true)
 	private Date added = new Date() ;
 
 	@Column
 	@Temporal(TemporalType.TIMESTAMP)
+	@ApiModelProperty(value="The date/time at which this host was last scanned", required=false)
 	private Date lastScanned = null ;
 
 	@Column(nullable=false)
+	@ApiModelProperty(value="Is periodic scanning enabled for this host?", required=true)
 	private Boolean active = Boolean.TRUE ;
 
 	@OneToMany(mappedBy="target", fetch=FetchType.LAZY)
+	@ApiModelProperty(value="The scan history associated with this host", required=false)
 	private List<Scan> scans = new ArrayList<>() ;
 
 	@OneToMany(mappedBy="host", fetch=FetchType.LAZY)
 	@OrderBy("scanTime ASC")
+	@ApiModelProperty(value="The ports history associated with this host", required=false)
 	private List<Ports> portHistory = new ArrayList<>() ;
 
 	@XmlAttribute(name="id")

@@ -1,11 +1,20 @@
 Scanalyzer
 ==========
 
-A ReSTful service application which will track and scan your network hosts using NMAP and store the results. (IN PROGRESS)
+A ReSTful service application which will track and scan your network hosts using NMAP and store the results. (COMPLETED)
 
-It will also compare previous results with the current results. (PLANNED)
+It will also compare previous results with the current results. (COMPLETED)
 
-It will generate warning messages about changes to your infrastructure. (PLANNED)
+It will generate warning messages about changes to your infrastructure. (COMPLETED)
+
+## Prerequisites
+
+This application assumes a *NIX style filesystem. It also requires the console [NMAP](http://nmap.org/) to be installed.
+It also needs a mail server to send alerts through. Finally, if you want/need to use something other than the
+embedded HSQLDB database, add the dependency to the Maven POM file and update the settings in your configuration file.
+
+By default, the embedded HSQLDB wants to create it's files in /var/lib/scanalyzer and it will need read and write permissions
+to create the database files.
 
 ## Building
 

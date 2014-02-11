@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.zanclus.scanalyzer.domain.entities.Host;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
@@ -38,19 +40,25 @@ import lombok.experimental.Builder;
 @Builder
 @XmlRootElement(name="ports")
 @XmlType(propOrder={"id", "hostId", "scanTime", "portStatus"})
+@ApiModel(value="A text list of ports which were detected for a given scanning run for a given host.")
 public class Ports implements Serializable {
 
 	private static final long serialVersionUID = -6613411551243528421L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@ApiModelProperty(value="The ID of the ports listing", required=true)
 	private Long id;
 	
 	@Column(length=1000000)
+	@ApiModelProperty(value="The text list of ports detected for a given scan run", required=true)
 	private String portStatus;
+
+	@ApiModelProperty(value="The date/time of the scan run", required=true)
 	private Date scanTime;
 
 	@ManyToOne(cascade=CascadeType.MERGE)
+	@ApiModelProperty(value="The host associated with this scan", required=true)
 	private Host host;
 
 	@XmlAttribute(name="id")

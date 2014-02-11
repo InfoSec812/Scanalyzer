@@ -3,11 +3,16 @@
  */
 package com.zanclus.scanalyzer ;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 
+import javax.servlet.DispatcherType;
+
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -20,6 +25,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
+import com.zanclus.scanalyzer.filters.CorsFilter;
 import com.zanclus.scanalyzer.listeners.WebContext;
 
 /**
@@ -45,7 +51,7 @@ public class Scanalyzer {
 		// Start up the embedded Jetty Servlet container
 		Server server = new Server(Integer.parseInt(config.get("scanalyzer.port"))) ;
 		ServletContextHandler context = new ServletContextHandler() ;
-		context.setContextPath("/") ;
+		context.setContextPath("/*") ;
 		context.setAttribute("config", config);
 		server.setHandler(context) ;
 
@@ -55,6 +61,11 @@ public class Scanalyzer {
 		context.addServlet(createJerseyServlet(), "/rest/*") ;
 
 		context.addServlet(createSwaggerServlet(), "/api/*") ;
+
+		FilterHolder corsFilter = new FilterHolder(new CrossOriginFilter()) ;
+		corsFilter.setInitParameter("allowedOrigins", "*") ;
+		corsFilter.setInitParameter("allowedMethods", "GET,POST,PUT,DELETE") ;
+		context.addFilter(corsFilter, "/*", EnumSet.of(DispatcherType.REQUEST)) ;
 
 		server.start() ;
 
@@ -93,7 +104,7 @@ public class Scanalyzer {
 	private static ServletHolder createSwaggerServlet() {
 		ServletHolder swagger = new ServletHolder() ;
 		swagger.setInitParameter("api.version", "1.0.0") ;
-		swagger.setInitParameter("swagger.api.basepath", "http://localhost:8002/api") ;
+		swagger.setInitParameter("swagger.api.basepath", "http://localhost:8080/rest") ;
 		swagger.setInitOrder(2) ;
 		swagger.setServlet(new JerseyJaxrsConfig()) ;
 		return swagger;

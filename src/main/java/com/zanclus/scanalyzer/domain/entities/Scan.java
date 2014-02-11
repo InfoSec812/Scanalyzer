@@ -22,6 +22,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
 
@@ -43,20 +45,25 @@ import lombok.experimental.Builder;
 @XmlRootElement(name="scan")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder={"id", "hostId", "scanTime", "scanResults"})
+@ApiModel(value="The complete output from NMAP for a given scan run")
 public class Scan {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@ApiModelProperty(value="The unique ID of the scan run", required=true)
 	private Long id ;
 
 	@Column(name="scan_time", nullable=false, updatable=false, insertable=true)
+	@ApiModelProperty(value="The date/time at which this scan was run", required=true)
 	private Date scanTime = new Date() ;
 
 	@Column(name="scan_results", length=1000000, nullable=false, updatable=false, insertable=true)
+	@ApiModelProperty(value="The full STDOUT text output from the NMAP run", required=true)
 	private String scanResults = null ;
 
 	@ManyToOne(cascade = CascadeType.MERGE)
 	@XmlTransient
+	@ApiModelProperty(value="The host associated with this scan run", required=true)
 	private Host target ;
 
 	@XmlAttribute(name="id")

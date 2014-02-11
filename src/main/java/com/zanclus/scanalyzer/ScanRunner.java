@@ -114,42 +114,77 @@ public class ScanRunner extends Thread {
 					// Check to see if this latest scan matches the most recent previous scan
 					// If they do not match, send a warning e-mail.
 					List<Ports> lastTwoScans = pDao.getPagedPortsHistoryByHostId(updated.getId(), 2, 0) ;
-					if (!(lastTwoScans.get(0).getPortStatus().toLowerCase().contentEquals(lastTwoScans.get(1).getPortStatus().toLowerCase()))) {
-						// The last 2 scans had different port states, so we need to send an alert!
-						
-						Properties props = new Properties() ;
-						props.setProperty("mail.smtp.auth", WebContext.getProp("mail.smtp.auth")) ;
-						props.setProperty("mail.smtp.starttls.enable", WebContext.getProp("mail.smtp.starttls.enable")) ;
-						props.setProperty("mail.smtp.host", WebContext.getProp("mail.smtp.host")) ;
-						props.setProperty("mail.smtp.port", WebContext.getProp("mail.smtp.port")) ;
+					if (lastTwoScans.size()==2) {
+						if (!(lastTwoScans.get(0).getPortStatus().toLowerCase()
+								.contentEquals(lastTwoScans.get(1)
+										.getPortStatus().toLowerCase()))) {
+							// The last 2 scans had different port states, so we need to send an alert!
 
-						Session session = null ;
-						if (WebContext.getProp("mail.smtp.auth").contentEquals("true")) {
-							session = Session.getInstance(props, new Authenticator() {
-								protected PasswordAuthentication getPasswordAuthentication() {
-									return new PasswordAuthentication(WebContext.getProp("mail.username"), WebContext.getProp("mail.password")) ;
-								}
-							});
-						} else {
-							session = Session.getInstance(props) ;
-						}
+							Properties props = new Properties();
+							props.setProperty("mail.smtp.auth",
+									WebContext.getProp("mail.smtp.auth"));
+							props.setProperty(
+									"mail.smtp.starttls.enable",
+									WebContext
+											.getProp("mail.smtp.starttls.enable"));
+							props.setProperty("mail.smtp.host",
+									WebContext.getProp("mail.smtp.host"));
+							props.setProperty("mail.smtp.port",
+									WebContext.getProp("mail.smtp.port"));
 
-						Message msg = new MimeMessage(session) ;
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
-						try {
-							msg.setFrom(new InternetAddress(WebContext.getProp("mail.from.address"))) ;
-							msg.setRecipient(RecipientType.TO, new InternetAddress(WebContext.getProp("mail.to.address"))) ;
-							msg.setSubject("Scanalyzer: '"+updated.getAddress()+"' has changed it's available services.") ;
-							msg.setText("To whom it may concern,\n\n\tThe host "+updated.getAddress()+" had a change" + 
-									"in the services which were detected when scanned with NMAP. This could be an "+
-									"expected change or it could mean that something is misconfigured. Regardless, we thought that "+
-									"you would like to know:\n\n\n" +
-									"Scan Results at "+sdf.format(lastTwoScans.get(0).getScanTime())+":\n\n"+lastTwoScans.get(0).getPortStatus()+"\n\n\n" +
-									"Scan Results at "+sdf.format(lastTwoScans.get(1).getScanTime())+":\n\n"+lastTwoScans.get(1).getPortStatus()+"\n\n\n") ;
-							Transport.send(msg) ;
-							log.error("Warning message sent.") ;
-						} catch (MessagingException e) {
-							log.error(e.getLocalizedMessage(), e) ;
+							Session session = null;
+							if (WebContext.getProp("mail.smtp.auth")
+									.contentEquals("true")) {
+								session = Session.getInstance(props,
+										new Authenticator() {
+											protected PasswordAuthentication getPasswordAuthentication() {
+												return new PasswordAuthentication(
+														WebContext
+																.getProp("mail.username"),
+														WebContext
+																.getProp("mail.password"));
+											}
+										});
+							} else {
+								session = Session.getInstance(props);
+							}
+
+							Message msg = new MimeMessage(session);
+							SimpleDateFormat sdf = new SimpleDateFormat(
+									"yyyy-MM-dd HH:mm:ss");
+							try {
+								msg.setFrom(new InternetAddress(WebContext
+										.getProp("mail.from.address")));
+								msg.setRecipient(
+										RecipientType.TO,
+										new InternetAddress(WebContext
+												.getProp("mail.to.address")));
+								msg.setSubject("Scanalyzer: '"
+										+ updated.getAddress()
+										+ "' has changed it's available services.");
+								msg.setText("To whom it may concern,\n\n\tThe host "
+										+ updated.getAddress()
+										+ " had a change"
+										+ "in the services which were detected when scanned with NMAP. This could be an "
+										+ "expected change or it could mean that something is misconfigured. Regardless, we thought that "
+										+ "you would like to know:\n\n\n"
+										+ "Scan Results at "
+										+ sdf.format(lastTwoScans.get(0)
+												.getScanTime())
+										+ ":\n\n"
+										+ lastTwoScans.get(0).getPortStatus()
+										+ "\n\n\n"
+										+ "Scan Results at "
+										+ sdf.format(lastTwoScans.get(1)
+												.getScanTime())
+										+ ":\n\n"
+										+ lastTwoScans.get(1).getPortStatus()
+										+ "\n\n\n");
+								Transport.send(msg);
+								log.error("Warning message sent.");
+							} catch (MessagingException e) {
+								log.error(e.getLocalizedMessage(), e);
+							}
 						}
 					}
 				} else {
