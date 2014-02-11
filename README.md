@@ -22,12 +22,14 @@ To run the application after building it, execute "java -jar target/scanalyzer-<
 Possible arguments are:
 
 ```
-scanalyzer [-c <config file>] [-b <bind address>] [-p <bind port>] [-t <thread count>]
+scanalyzer [-c <config file>] [-b <bind address>] [-p <bind port>] [-t <thread count>] [---mailuser <username>] [--mailpass <password>]
 	--config=<config file> || -c <config file>         The path to a configuration file (Default: Checks for /etc/scanalyzer/scanalyzer.conf).
 	--bind=<bind address> || -b <bind address>         The address on which to listen on for web clients (defaults to 127.0.0.1).
 	--port=<bind port> || -p <bind port>               The port on which to listen on for web clients (defaults to 8080).
 	--threads=<thread count> || -t <thread count>      The number of concurrent scanning threads which can run (defaults to 5).
-	--help || -h                                       Shows this help text.
+	--mailuser=<username> || -u <username>             A username with which to authenticate for sending e-mail.
+	--mailpass=<password> || -w <password>             A password with which to authenticate for sending e-mail.
+	--help || -h                                       Shows this help text.                                      Shows this help text.
 ```
 
 For an example of ALL of the config file options, look at [scanalyzer.properties](src/main/resources/scanalyzer.properties)
