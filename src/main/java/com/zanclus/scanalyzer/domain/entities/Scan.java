@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 
 /**
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  *
  */ 
 @Entity

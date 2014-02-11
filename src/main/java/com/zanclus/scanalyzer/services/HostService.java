@@ -35,7 +35,7 @@ import com.zanclus.scanalyzer.domain.entities.ScanCollectionWrapper;
 /**
  * The JAX-RS endpoints related to Hosts and their associated scans and port histories.
  * 
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  * 
  */
 @Path("/host")

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Stupid collection serialization DTO - This is 2014 already, why do we need this shit!
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  *
  */
 @Data

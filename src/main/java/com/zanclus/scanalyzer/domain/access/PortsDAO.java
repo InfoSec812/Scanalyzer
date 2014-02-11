@@ -11,7 +11,7 @@ import com.zanclus.scanalyzer.domain.entities.Ports;
 /**
  * A Data Access Object for CCRUD operations on Ports entities
  * 
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  *
  */
 public class PortsDAO extends GenericDAO<Ports, Long> {

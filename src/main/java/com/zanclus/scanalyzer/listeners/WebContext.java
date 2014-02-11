@@ -19,7 +19,7 @@ import com.zanclus.scanalyzer.ScanRunner;
  * The is a ServletContextListener which set up and stores references to expensive resources like the
  * application's parsed configuration and Java Persistence {@link EntityManagerFactory}
  * 
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  *
  */
 public class WebContext implements ServletContextListener {

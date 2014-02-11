@@ -8,7 +8,7 @@ import java.util.Date;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  *
  */
 public class DateAdapter extends XmlAdapter<String,Date> {

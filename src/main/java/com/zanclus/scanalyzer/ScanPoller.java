@@ -18,7 +18,7 @@ import com.zanclus.scanalyzer.listeners.WebContext;
 /**
  * A {@link Job} scheduled in Quartz to run every minute to check for hosts which need to be scanned
  * 
- * @author <a href="mailto: ***REMOVED***">Deven Phillips</a>
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  *
  */
 public class ScanPoller implements Job {
