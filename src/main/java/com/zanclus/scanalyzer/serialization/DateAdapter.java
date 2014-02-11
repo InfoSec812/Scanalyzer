@@ -20,7 +20,6 @@ public class DateAdapter extends XmlAdapter<String,Date> {
 	 */
 	@Override
 	public Date unmarshal(String v) throws Exception {
-		// TODO Auto-generated method stub
 		return sdf.parse(v) ;
 	}
 
@@ -29,7 +28,6 @@ public class DateAdapter extends XmlAdapter<String,Date> {
 	 */
 	@Override
 	public String marshal(Date v) throws Exception {
-		// TODO Auto-generated method stub
 		return sdf.format(v) ;
 	}
 

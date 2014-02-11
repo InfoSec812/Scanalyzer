@@ -160,12 +160,8 @@ public class Init {
 
 		try {
 			this.loadConfigFile();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			log.error(e.getLocalizedMessage(), e) ;
 		}
 
 		// Set default values for any configurations settings which were not
