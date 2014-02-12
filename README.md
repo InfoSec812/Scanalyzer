@@ -26,7 +26,11 @@ mvn clean package
 
 ## Running
 
-To run the application after building it, execute "java -jar target/scanalyzer-<version>.jar"
+To run the application after building it, execute:
+
+```
+mvn exec:java -Dexec.mainClass=com.zanclus.scanalyzer.Scanalyzer -Dexec.args="<your args here>"
+```
 
 Possible arguments are:
 
