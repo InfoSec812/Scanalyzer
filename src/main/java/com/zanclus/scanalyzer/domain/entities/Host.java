@@ -65,6 +65,10 @@ public class Host {
 	@ApiModelProperty(value="Is periodic scanning enabled for this host?", required=true)
 	private Boolean active = Boolean.TRUE ;
 
+	@Column(nullable=true)
+	@ApiModelProperty(value="The operating system as detected by NMAP.", required=false)
+	private String operatingSystem ;
+
 	@OneToMany(mappedBy="target", fetch=FetchType.LAZY)
 	@ApiModelProperty(value="The scan history associated with this host", required=false)
 	private List<Scan> scans = new ArrayList<>() ;

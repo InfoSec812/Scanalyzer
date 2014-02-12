@@ -67,6 +67,8 @@ public class ScanRunner extends Thread {
 				ports = new ArrayList<>() ;
 			}
 
+			String operatingSystem = null ;
+
 			// try/with - Such awesome, very technology
 			try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 				String line = null ;
@@ -77,6 +79,8 @@ public class ScanRunner extends Thread {
 						if (line.trim().length()>0) {
 							ports.add(line) ;
 						}
+					} else if (line.startsWith("OS details: ")) {
+						operatingSystem = line.split(": ")[1] ;
 					}
 				}
 				if (persist) {
@@ -87,6 +91,9 @@ public class ScanRunner extends Thread {
 					HostDAO hDao = new HostDAO() ;
 					Host updated = hDao.findById(target.getId()) ;
 					updated.setLastScanned(scanResults.getScanTime()) ;
+					if (operatingSystem!=null) {
+						updated.setOperatingSystem(operatingSystem) ;
+					}
 					hDao.update(updated) ;
 					scanResults.setTarget(updated) ;
 					
