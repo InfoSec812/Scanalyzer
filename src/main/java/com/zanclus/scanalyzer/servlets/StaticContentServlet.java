@@ -45,7 +45,6 @@ public class StaticContentServlet extends HttpServlet {
 		
 		try (InputStream contentInputStream = this.getClass().getClassLoader().getResourceAsStream(fileName)) {
 			BufferedInputStream reader = new BufferedInputStream(contentInputStream) ;
-			log.info("Opened BufferedReader") ;
 			byte[] buffer = new byte[1024] ;
 			int numRead = 0 ;
 			int byteCount = 0 ;
@@ -57,7 +56,6 @@ public class StaticContentServlet extends HttpServlet {
 			reader.close() ;
 			resp.setContentLengthLong(byteCount) ;
 			out.close() ;
-			log.info("Response written") ;
 		}
 	}
 }
