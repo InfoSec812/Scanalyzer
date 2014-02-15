@@ -14,11 +14,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.xml.txw2.annotation.XmlElement;
 import com.wordnik.swagger.annotations.ApiModel;
@@ -68,6 +71,9 @@ public class User implements Serializable {
 
 	@ApiModelProperty("Is this user's account active (not disabled for administrative purposes)?")
 	private Boolean active = Boolean.TRUE ;
+
+	@ApiModelProperty("Is this user's account allowed admin privileges?")
+	private Boolean admin = Boolean.FALSE ;
 	
 	@OneToMany(cascade = ALL, orphanRemoval = true)
 	@JoinColumn(name="hostId", referencedColumnName="id")
@@ -76,15 +82,18 @@ public class User implements Serializable {
 	@ManyToMany(mappedBy="members")
 	private List<Group> groups = new ArrayList<>() ;
 
+	@Transient
+	private Logger log = LoggerFactory.getLogger(User.class) ;
+
 	public User(Long id, String givenName, String familyName, String login,
-			String password, String email, Boolean enabled, Boolean active, 
-			List<Token> tokens, List<Group> groups) {
+			String password, String email, Boolean enabled, Boolean active, Boolean admin, 
+			List<Token> tokens, List<Group> groups, Logger log) {
 		super();
 		this.id = id ;
 		this.givenName = givenName ;
 		this.familyName = familyName ;
 		this.login = login ;
-		this.setPassword(password) ;
+		this.setPassword(this.password) ;
 		this.email = email ;
 		this.enabled = enabled ;
 		this.active = active ;
@@ -95,7 +104,17 @@ public class User implements Serializable {
 	}
 
 	public boolean validatePassword(String password) {
-		return BCrypt.checkpw(password, this.password) ;
+		if (this.password==null) {
+			log.warn("Persisted password value is null.") ;
+			return false ;
+		} else {
+			return BCrypt.checkpw(password, this.password) ;
+		}
+	}
+
+	@XmlTransient
+	public Logger getLog() {
+		return null ;
 	}
 
 	@XmlAttribute(name="id")
@@ -108,7 +127,6 @@ public class User implements Serializable {
 		return "/rest/user/"+id+"/groups" ;
 	}
 
-	@XmlTransient
 	public String getPassword() {
 		return null ;
 	}
@@ -120,6 +138,6 @@ public class User implements Serializable {
 
 	@XmlTransient
 	public List<Token> getTokens() {
-		return null ;
+		return tokens ;
 	}
 }

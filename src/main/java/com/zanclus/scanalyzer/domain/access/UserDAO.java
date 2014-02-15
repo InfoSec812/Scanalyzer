@@ -6,6 +6,9 @@ package com.zanclus.scanalyzer.domain.access;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.zanclus.scanalyzer.domain.entities.Token;
 import com.zanclus.scanalyzer.domain.entities.User;
 
@@ -15,14 +18,21 @@ import com.zanclus.scanalyzer.domain.entities.User;
  */
 public class UserDAO extends GenericDAO<User, Long> {
 
+	private Logger log ;
+
+	public UserDAO() {
+		super() ;
+		log = LoggerFactory.getLogger(UserDAO.class) ;
+	}
+
 	public Token getNewTokenForUser(Long id, String login, String password) {
 		em.getTransaction().begin() ;
 		User user = em.find(User.class, id) ;
 		Token newToken = new Token() ;
 		em.persist(newToken) ;
 		user.getTokens().add(newToken) ;
-		em.refresh(newToken) ;
 		em.getTransaction().commit() ;
+		log.debug("Committed token transaction") ;
 		if (user.getLogin().contentEquals(login) && user.validatePassword(password)) {
 			return newToken ;
 		} else {

@@ -36,13 +36,17 @@ public class WebContext implements ServletContextListener {
 
 	private static Logger log = null ;
 
+	public WebContext() {
+		super() ;
+		log = LoggerFactory.getLogger(WebContext.class) ;
+	}
+
 	/* (non-Javadoc)
 	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
 	 */
 	@SuppressWarnings("unchecked")   // Because Java 7 still has no ability to check parameterized types.... Booo!!
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		log = LoggerFactory.getLogger(WebContext.class) ;
 		log.info("ServletContextListener loading.") ;
 		config = (HashMap<String, String>) sce.getServletContext().getAttribute("config") ;
 		emf = Persistence.createEntityManagerFactory("scanalyzer", config) ;
@@ -50,9 +54,12 @@ public class WebContext implements ServletContextListener {
 		// For in-memory databases which are not persistent, create a default admin account...
 		if (config.get("javax.persistence.jdbc.url").startsWith("jdbc:hsqldb:mem")) {
 			EntityManager em = emf.createEntityManager();
-			User adminUser = User.builder().familyName("Administrator")
-					.givenName("Systems").login("admin").password("changeme")
-					.build();
+			User adminUser = User.builder()
+					.familyName("Administrator")
+					.givenName("Systems")
+					.login("admin")
+					.password("changeme")
+					.build() ;
 			em.getTransaction().begin();
 			em.persist(adminUser);
 			em.getTransaction().commit();

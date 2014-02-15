@@ -8,6 +8,11 @@
 	<description>A web application for scanning and auditing network hosts using NMAP</description>
 	<dependencies>
 		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>3.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.2.7.SP1</version>
