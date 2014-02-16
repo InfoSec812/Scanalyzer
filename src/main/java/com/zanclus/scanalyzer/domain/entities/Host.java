@@ -1,16 +1,15 @@
 package com.zanclus.scanalyzer.domain.entities;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.PostPersist;
@@ -22,6 +21,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -31,21 +31,24 @@ import com.zanclus.scanalyzer.ScanRunner;
 import com.zanclus.scanalyzer.listeners.WebContext;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 // Lombok saves me from boilerplate hell!
 @Data
+@EqualsAndHashCode(callSuper=true)
 @Entity
 @Table(name="HOSTS")
 @XmlRootElement(name="host")
 @JsonRootName("host")
 @ApiModel(value="A host represents a single address which is accessible either on the local network or the Internet")
-public class Host {
+public class Host extends IndexedEntity implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@ApiModelProperty(value="The unique ID for this host", required=true)
-	private Long id ;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4830208317277697554L;
 
 	@Column(unique=true)
 	@ApiModelProperty(value="The Internet address for this host", required=true)

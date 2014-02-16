@@ -1,14 +1,13 @@
 package com.zanclus.scanalyzer.domain.entities;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
@@ -17,11 +16,13 @@ import lombok.Data;
 @Entity
 @Table(name="tokens")
 @Data
-public class Token {
+@EqualsAndHashCode(callSuper=true)
+public class Token extends IndexedEntity implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id ;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6758602935988065968L;
 
 	private String token = UUID.randomUUID().toString() ;
 }

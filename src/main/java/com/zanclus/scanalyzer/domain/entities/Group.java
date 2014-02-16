@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.EntityManager;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -20,8 +18,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.zanclus.scanalyzer.listeners.WebContext;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 
@@ -32,24 +33,24 @@ import lombok.experimental.Builder;
 @Entity
 @Table(name="groups")
 @Data
+@EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @XmlRootElement(name="group")
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Group implements Serializable {
+public class Group extends IndexedEntity implements Serializable, RightsHolder {
 
 	private static final long serialVersionUID = 7313120316934000672L;
-
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id ;
 
 	private String name ;
 	private boolean enabled ;
 
 	@ManyToMany
 	private List<User> members = new ArrayList<>() ;
+
+	@ManyToMany
+	private List<IndexedEntity> rights ;
 
 	@XmlAttribute(name="id")
 	public Long getId() {
@@ -64,5 +65,23 @@ public class Group implements Serializable {
 	@XmlElement(name="memberReference")
 	public String getMemberReference() {
 		return "/rest/group/"+id+"/members" ;
+	}
+
+	@XmlTransient
+	@Override
+	public boolean isAuthorized(IndexedEntity entity) {
+		boolean retVal = false ;
+		String entityType = entity.getClass().getName() ;
+		EntityManager em = WebContext.getEntityManager() ;
+		em.getTransaction().begin() ;
+		int returnedRows = em.createQuery("FROM Group g LEFT JOIN g.rights r LEFT JOIN r.entities e WHERE r.type=:entityType AND e.id=:entityId")
+			.setParameter("entityType", entityType)
+			.setParameter("entityId", entity.getId())
+			.getResultList().size() ;
+		em.getTransaction().commit() ;
+		if (returnedRows>0) {
+			retVal = true ;
+		}
+		return retVal ;
 	}
 }

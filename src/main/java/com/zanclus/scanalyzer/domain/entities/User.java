@@ -7,9 +7,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
@@ -26,8 +24,10 @@ import org.slf4j.LoggerFactory;
 import com.sun.xml.txw2.annotation.XmlElement;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+import com.zanclus.scanalyzer.listeners.WebContext;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 import static javax.persistence.CascadeType.ALL;
@@ -39,18 +39,14 @@ import static javax.persistence.CascadeType.ALL;
 @Entity
 @Table(name="users")
 @Data
+@EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
 @Builder
 @XmlRootElement(name="user")
 @ApiModel(value="A User of this service.")
-public class User implements Serializable {
+public class User extends IndexedEntity implements Serializable, RightsHolder {
 
 	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@ApiModelProperty("The unique ID of this user's account record.")
-	private Long id;
 
 	private String givenName ;
 	private String familyName ;
@@ -82,14 +78,16 @@ public class User implements Serializable {
 	@ManyToMany(mappedBy="members")
 	private List<Group> groups = new ArrayList<>() ;
 
+	@ManyToMany
+	private List<IndexedEntity> rights = new ArrayList<>() ;
+
 	@Transient
 	private Logger log = LoggerFactory.getLogger(User.class) ;
 
-	public User(Long id, String givenName, String familyName, String login,
+	public User(String givenName, String familyName, String login,
 			String password, String email, Boolean enabled, Boolean active, Boolean admin, 
-			List<Token> tokens, List<Group> groups, Logger log) {
+			List<Token> tokens, List<Group> groups, List<IndexedEntity> rights, Logger log) {
 		super();
-		this.id = id ;
 		this.givenName = givenName ;
 		this.familyName = familyName ;
 		this.login = login ;
@@ -139,5 +137,23 @@ public class User implements Serializable {
 	@XmlTransient
 	public List<Token> getTokens() {
 		return tokens ;
+	}
+
+	@XmlTransient
+	@Override
+	public boolean isAuthorized(IndexedEntity entity) {
+		boolean retVal = false ;
+		String entityType = entity.getClass().getName() ;
+		EntityManager em = WebContext.getEntityManager() ;
+		em.getTransaction().begin() ;
+		int returnedRows = em.createQuery("FROM User u LEFT JOIN u.rights r LEFT JOIN r.entities e WHERE r.type=:entityType AND e.id=:entityId")
+			.setParameter("entityType", entityType)
+			.setParameter("entityId", entity.getId())
+			.getResultList().size() ;
+		em.getTransaction().commit() ;
+		if (returnedRows>0) {
+			retVal = true ;
+		}
+		return retVal ;
 	}
 }
