@@ -36,11 +36,35 @@ public class UserRoleRequestWrapper extends HttpServletRequestWrapper {
 			EntityManager em = WebContext.getEntityManager() ;
 			try {
 				em.getTransaction().begin() ;
-				user = em.createQuery("SELECT u FROM Token t INNER JOIN t.user u WHERE t.token=:token", User.class)
+				user = em.createQuery("SELECT u FROM Token t INNER JOIN t.user u WHERE t.token=:token AND u.active=true AND u.enabled=true", User.class)
 					.setParameter("token", token)
 					.getSingleResult() ;
 				em.getTransaction().commit() ;
 				em.close() ;
+			} catch (Exception e) {
+				log.info("Unable to map token to user.", e) ;
+			}
+		}
+		this.realRequest = request;
+	}
+
+	public UserRoleRequestWrapper(String login, String password, HttpServletRequest request) {
+		super(request);
+		log = LoggerFactory.getLogger(UserRoleRequestWrapper.class) ;
+		
+		if (login!=null && login.trim().length()>0 && password!=null && password.trim().length()>0) {
+			EntityManager em = WebContext.getEntityManager() ;
+			try {
+				em.getTransaction().begin() ;
+				user = em.createQuery("FROM User u WHERE u.login=:login AND u.active=true AND u.enabled=true", User.class)
+					.setParameter("login", login)
+					.getSingleResult() ;
+				em.getTransaction().commit() ;
+				em.close() ;
+				
+				if (!user.validatePassword(password)) {
+					user = null ;
+				}
 			} catch (Exception e) {
 				log.info("Unable to map token to user.", e) ;
 			}

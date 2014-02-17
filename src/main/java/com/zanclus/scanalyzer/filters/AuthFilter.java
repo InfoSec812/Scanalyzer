@@ -20,7 +20,13 @@ public class AuthFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
 		String token = ((HttpServletRequest)request).getHeader("api_key") ;
-		chain.doFilter(new UserRoleRequestWrapper(token, ((HttpServletRequest)request)), response) ;
+		if (token==null || token.trim().length()<1) {
+			String login = ((HttpServletRequest)request).getHeader("login") ;
+			String password = ((HttpServletRequest)request).getHeader("password") ;
+			chain.doFilter(new UserRoleRequestWrapper(login, password, ((HttpServletRequest)request)), response);
+		} else {
+			chain.doFilter(new UserRoleRequestWrapper(token, ((HttpServletRequest)request)), response) ;
+		}
 	}
 
 	@Override

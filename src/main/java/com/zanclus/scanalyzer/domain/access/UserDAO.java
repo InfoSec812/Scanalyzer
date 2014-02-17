@@ -58,17 +58,21 @@ public class UserDAO extends GenericDAO<User, Long> {
 	 * @param password The password for the account
 	 * @return A {@link Token} which contains a randomly generated UUID string to be used for API authentication
 	 */
-	public Token getNewTokenForUser(Long id, String login, String password) {
+	public Token getNewTokenForUser(Long id) {
 		em = WebContext.getEntityManager() ;
 		em.getTransaction().begin() ;
-		User user = em.find(User.class, id) ;
+		if (user.getAdmin()) {
+			user = em.find(User.class, id) ;
+		} else {
+			user = em.find(User.class, user.getId()) ;
+		}
 		Token newToken = new Token() ;
 		newToken.setUser(user) ;
 		em.persist(newToken) ;
 		em.getTransaction().commit() ;
 		em.close();
 		log.debug("Committed token transaction: "+user.getTokens().size()) ;
-		if (user.getLogin().contentEquals(login) && user.validatePassword(password)) {
+		if (user.getActive()) {
 			return newToken ;
 		} else {
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;

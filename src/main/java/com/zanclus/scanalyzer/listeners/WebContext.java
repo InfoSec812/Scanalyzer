@@ -6,16 +6,13 @@ package com.zanclus.scanalyzer.listeners;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.zanclus.scanalyzer.ScanRunner;
 import com.zanclus.scanalyzer.domain.entities.User;
 
@@ -52,8 +49,12 @@ public class WebContext implements ServletContextListener {
 		emf = Persistence.createEntityManagerFactory("scanalyzer", config) ;
 
 		// For in-memory databases which are not persistent, create a default admin account...
-		if (config.get("javax.persistence.jdbc.url").startsWith("jdbc:hsqldb:mem")) {
-			EntityManager em = emf.createEntityManager();
+		EntityManager em = emf.createEntityManager();
+		
+		em.getTransaction().begin();
+		int count = em.createQuery("FROM User u WHERE u.admin=true", User.class).getResultList().size() ;
+		if (count==0) {
+			log.info("No admin accounts currently exist, we'll create one for you.") ;
 			User adminUser = User.builder()
 					.familyName("Administrator")
 					.givenName("Systems")
@@ -63,12 +64,11 @@ public class WebContext implements ServletContextListener {
 					.admin(true)
 					.enabled(true)
 					.build() ;
-			em.getTransaction().begin();
 			em.persist(adminUser);
-			em.getTransaction().commit();
-			em.close() ;
-			log.info("Default admin account created");
 		}
+		em.getTransaction().commit();
+		em.close() ;
+		log.info("Default admin account created");
 
 		scanPool = Executors.newFixedThreadPool(Integer.parseInt(config.get("scanalyzer.threads"))) ;
 	}

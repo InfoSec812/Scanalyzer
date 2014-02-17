@@ -166,7 +166,7 @@ public class UserService {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		UserDAO dao = new UserDAO(up.getUser()) ;
 		log.debug("Preparing to create new Token and associate it with user: "+login+":"+password+":"+id) ;
-		Token retVal = dao.getNewTokenForUser(id, login, password) ;
+		Token retVal = dao.getNewTokenForUser(id) ;
 
 		Auditor.writeAuditEntry(up.getUser(), "create", Token.class, retVal) ;
 		return retVal ;

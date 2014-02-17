@@ -53,3 +53,16 @@ Once the application is running, you can access the Swagger API interface at:
 ```
 http://<host address>:<port>/static/
 ```
+
+## Operation
+
+On startup, the application will create any database tables needed and create a new defaul admin user, the credentials to which are:
+
+```
+Username: admin
+Password: changeme
+```
+
+Only admin users can create new user accounts. All endpoints can be authenticated to by using login/password headers, 
+or a single "API_KEY" header. To obtain an API_KEY, make a call to the /rest/user/{id}/token endpoint and authenticate with
+login/password
