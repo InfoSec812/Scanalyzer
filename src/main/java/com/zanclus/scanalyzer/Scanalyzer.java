@@ -30,7 +30,7 @@ import com.zanclus.scanalyzer.listeners.WebContext;
 import com.zanclus.scanalyzer.servlets.StaticContentServlet;
 
 /**
- * The applications invocation class.
+ * The application's invocation class.
  * @author <a href="mailto:deven.phillips@gmail.com">Deven Phillips</a>
  *
  */
@@ -59,26 +59,34 @@ public class Scanalyzer {
 		// Add a ServletContextListener for some shared resources which are expensive to generate
 		context.addEventListener(new WebContext());
 
+		// Add an instance of the Jersey servlet for ReST
 		context.addServlet(createJerseyServlet(), "/rest/*") ;
 
+		// Add an instance of the Swagger servlet to provide a nice UI for the API
 		context.addServlet(createSwaggerServlet(), "/api/*") ;
 
+		// Add a static content server so that we can include the Swagger UI in the executable JAR
 		context.addServlet(createStaticServlet(), "/static/*") ;
 
+		// Add a filter to handle attaching a user Principal to authenticated requests
 		context.addFilter(createAuthFilter(), "/rest/*", EnumSet.of(DispatcherType.REQUEST)) ;
 
+		// Add a CORS filter to allow Swagger UI to work when NOT accessed inside of the application
 		FilterHolder corsFilter = new FilterHolder(new CrossOriginFilter()) ;
 		corsFilter.setInitParameter("allowedOrigins", "*") ;
 		corsFilter.setInitParameter("allowedMethods", "GET,POST,PUT,DELETE") ;
 		context.addFilter(corsFilter, "/*", EnumSet.of(DispatcherType.REQUEST)) ;
 		context.addFilter(createAuthFilter(), "/*", EnumSet.of(DispatcherType.REQUEST)) ;
 
+		// Start Jetty embedded
 		server.start() ;
 
 		// This MUST be run AFTER the Jetty server starts because it needs access 
 		// to the ServletContextListener's state information
+		// Start the scanning poller
 		startPollingScheduler();
 
+		// Join the Jetty master thread and wait for it to exit.
 		server.join() ;
 	}
 
