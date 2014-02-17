@@ -26,11 +26,11 @@ public class StaticContentServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -5548898183035046413L;
 
-	private Logger log = LoggerFactory.getLogger(this.getClass()) ;
+	private Logger log ;
 
 	public StaticContentServlet() {
 		super() ;
-		
+		log = LoggerFactory.getLogger(this.getClass()) ;
 	}
 
 	@Override
@@ -45,8 +45,8 @@ public class StaticContentServlet extends HttpServlet {
 		
 		try (InputStream contentInputStream = this.getClass().getClassLoader().getResourceAsStream(fileName)) {
 			BufferedInputStream reader = new BufferedInputStream(contentInputStream) ;
-			log.info("Opened BufferedReader") ;
 			byte[] buffer = new byte[1024] ;
+			log.debug("Loading content for page: "+fileName) ;
 			int numRead = 0 ;
 			int byteCount = 0 ;
 			OutputStream out = resp.getOutputStream() ;
@@ -57,7 +57,6 @@ public class StaticContentServlet extends HttpServlet {
 			reader.close() ;
 			resp.setContentLengthLong(byteCount) ;
 			out.close() ;
-			log.info("Response written") ;
 		}
 	}
 }
