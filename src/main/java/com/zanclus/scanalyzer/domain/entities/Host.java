@@ -7,9 +7,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.PostPersist;
@@ -22,6 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -32,23 +39,31 @@ import com.zanclus.scanalyzer.listeners.WebContext;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Builder;
 
 // Lombok saves me from boilerplate hell!
 @Data
-@EqualsAndHashCode(callSuper=true)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name="HOSTS")
 @XmlRootElement(name="host")
 @JsonRootName("host")
 @ApiModel(value="A host represents a single address which is accessible either on the local network or the Internet")
-public class Host extends IndexedEntity implements Serializable {
+public class Host implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4830208317277697554L;
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id ;
 
 	@Column(unique=true)
 	@ApiModelProperty(value="The Internet address for this host", required=true)
@@ -68,15 +83,18 @@ public class Host extends IndexedEntity implements Serializable {
 	@ApiModelProperty(value="Is periodic scanning enabled for this host?", required=true)
 	private Boolean active = Boolean.TRUE ;
 
+	@ManyToOne
+	private User owner ;
+
 	@Column(nullable=true)
 	@ApiModelProperty(value="The operating system as detected by NMAP.", required=false)
 	private String operatingSystem ;
 
-	@OneToMany(mappedBy="target", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="target", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@ApiModelProperty(value="The scan history associated with this host", required=false)
 	private List<Scan> scans = new ArrayList<>() ;
 
-	@OneToMany(mappedBy="host", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="host", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@OrderBy("scanTime ASC")
 	@ApiModelProperty(value="The ports history associated with this host", required=false)
 	private List<Ports> portHistory = new ArrayList<>() ;

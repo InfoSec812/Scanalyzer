@@ -59,10 +59,15 @@ public class WebContext implements ServletContextListener {
 					.givenName("Systems")
 					.login("admin")
 					.password("changeme")
+					.active(true)
+					.admin(true)
+					.enabled(true)
 					.build() ;
 			em.getTransaction().begin();
 			em.persist(adminUser);
 			em.getTransaction().commit();
+			em.close() ;
+			log.info("Default admin account created");
 		}
 
 		scanPool = Executors.newFixedThreadPool(Integer.parseInt(config.get("scanalyzer.threads"))) ;

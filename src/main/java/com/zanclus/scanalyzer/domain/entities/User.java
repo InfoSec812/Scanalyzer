@@ -4,30 +4,26 @@ import java.io.Serializable;
 import java.lang.Long;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.xml.txw2.annotation.XmlElement;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
-import com.zanclus.scanalyzer.listeners.WebContext;
-
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 import static javax.persistence.CascadeType.ALL;
@@ -39,14 +35,17 @@ import static javax.persistence.CascadeType.ALL;
 @Entity
 @Table(name="users")
 @Data
-@EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
 @Builder
 @XmlRootElement(name="user")
 @ApiModel(value="A User of this service.")
-public class User extends IndexedEntity implements Serializable, RightsHolder {
+public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id ;
 
 	private String givenName ;
 	private String familyName ;
@@ -71,43 +70,45 @@ public class User extends IndexedEntity implements Serializable, RightsHolder {
 	@ApiModelProperty("Is this user's account allowed admin privileges?")
 	private Boolean admin = Boolean.FALSE ;
 	
-	@OneToMany(cascade = ALL, orphanRemoval = true)
-	@JoinColumn(name="hostId", referencedColumnName="id")
+	@OneToMany(cascade = ALL, orphanRemoval = true, mappedBy = "user", fetch=FetchType.EAGER)
 	private List<Token> tokens = new ArrayList<>() ;
 
-	@ManyToMany(mappedBy="members")
-	private List<Group> groups = new ArrayList<>() ;
-
-	@ManyToMany
-	private List<IndexedEntity> rights = new ArrayList<>() ;
+	@OneToMany(cascade=ALL, orphanRemoval=true)
+	private List<Host> hosts = new ArrayList<>() ;
 
 	@Transient
 	private Logger log = LoggerFactory.getLogger(User.class) ;
 
-	public User(String givenName, String familyName, String login,
-			String password, String email, Boolean enabled, Boolean active, Boolean admin, 
-			List<Token> tokens, List<Group> groups, List<IndexedEntity> rights, Logger log) {
+	public User(Long id, String givenName, String familyName, String login,
+			String pass, String email, Boolean enabled, Boolean active, Boolean admin, 
+			List<Token> tokens, List<Host> hosts, Logger log) {
 		super();
+		this.id = id ;
 		this.givenName = givenName ;
 		this.familyName = familyName ;
 		this.login = login ;
-		this.setPassword(this.password) ;
+		this.password = BCrypt.hashpw(pass, BCrypt.gensalt(4)) ;
 		this.email = email ;
 		this.enabled = enabled ;
 		this.active = active ;
+		this.admin = admin ;
 	}
 
 	public void setPassword(String password) {
 		this.password = BCrypt.hashpw(password, BCrypt.gensalt(4)) ;
 	}
 
-	public boolean validatePassword(String password) {
+	public boolean validatePassword(String plaintext) {
 		if (this.password==null) {
 			log.warn("Persisted password value is null.") ;
 			return false ;
 		} else {
-			return BCrypt.checkpw(password, this.password) ;
+			return BCrypt.checkpw(plaintext, this.password) ;
 		}
+	}
+
+	public String getHosts() {
+		return "/rest/user/"+this.id+"/hosts" ;
 	}
 
 	@XmlTransient
@@ -120,40 +121,14 @@ public class User extends IndexedEntity implements Serializable, RightsHolder {
 		return id ;
 	}
 
-	@XmlElement("groupsReference")
-	public String getGroupReference() {
-		return "/rest/user/"+id+"/groups" ;
-	}
-
+	@XmlElement(nillable=true)
+	@JsonValue
 	public String getPassword() {
 		return null ;
 	}
 
 	@XmlTransient
-	public List<Group> getGroups() {
-		return groups ;
-	}
-
-	@XmlTransient
 	public List<Token> getTokens() {
 		return tokens ;
-	}
-
-	@XmlTransient
-	@Override
-	public boolean isAuthorized(IndexedEntity entity) {
-		boolean retVal = false ;
-		String entityType = entity.getClass().getName() ;
-		EntityManager em = WebContext.getEntityManager() ;
-		em.getTransaction().begin() ;
-		int returnedRows = em.createQuery("FROM User u LEFT JOIN u.rights r LEFT JOIN r.entities e WHERE r.type=:entityType AND e.id=:entityId")
-			.setParameter("entityType", entityType)
-			.setParameter("entityId", entity.getId())
-			.getResultList().size() ;
-		em.getTransaction().commit() ;
-		if (returnedRows>0) {
-			retVal = true ;
-		}
-		return retVal ;
 	}
 }

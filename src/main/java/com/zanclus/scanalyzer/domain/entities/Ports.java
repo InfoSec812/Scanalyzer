@@ -9,12 +9,10 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.zanclus.scanalyzer.domain.entities.Host;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
-
 import java.io.Serializable;
 import java.lang.Long;
 import java.lang.String;
 import java.util.Date;
-
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,10 +20,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 
@@ -36,17 +32,20 @@ import lombok.experimental.Builder;
 @Entity
 @Table(name="ports")
 @Data
-@EqualsAndHashCode(callSuper=true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @XmlRootElement(name="ports")
 @XmlType(propOrder={"id", "hostId", "scanTime", "portStatus"})
 @ApiModel(value="A text list of ports which were detected for a given scanning run for a given host.")
-public class Ports extends IndexedEntity implements Serializable {
+public class Ports implements Serializable {
 
 	private static final long serialVersionUID = -6613411551243528421L;
 	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id ;
+
 	@Column(length=1000000)
 	@ApiModelProperty(value="The text list of ports detected for a given scan run", required=true)
 	private String portStatus;

@@ -25,6 +25,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
+import com.zanclus.scanalyzer.filters.AuthFilter;
 import com.zanclus.scanalyzer.listeners.WebContext;
 import com.zanclus.scanalyzer.servlets.StaticContentServlet;
 
@@ -64,10 +65,13 @@ public class Scanalyzer {
 
 		context.addServlet(createStaticServlet(), "/static/*") ;
 
+		context.addFilter(createAuthFilter(), "/rest/*", EnumSet.of(DispatcherType.REQUEST)) ;
+
 		FilterHolder corsFilter = new FilterHolder(new CrossOriginFilter()) ;
 		corsFilter.setInitParameter("allowedOrigins", "*") ;
 		corsFilter.setInitParameter("allowedMethods", "GET,POST,PUT,DELETE") ;
 		context.addFilter(corsFilter, "/*", EnumSet.of(DispatcherType.REQUEST)) ;
+		context.addFilter(createAuthFilter(), "/*", EnumSet.of(DispatcherType.REQUEST)) ;
 
 		server.start() ;
 
@@ -121,6 +125,7 @@ public class Scanalyzer {
 		restServlet.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
 		restServlet.setInitParameter("com.sun.jersey.config.property.packages", "com.zanclus.scanalyzer.services;org.codehaus.jackson.jaxrs;com.wordnik.swagger.jersey.listing"); 
 		restServlet.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true") ;
+		restServlet.setInitParameter("com.sun.jersey.config.feature.Trace", config.get("com.sun.jersey.config.feature.Trace")==null?"false":config.get("com.sun.jersey.config.feature.Trace")) ;
 		restServlet.setInitOrder(1) ;
 		restServlet.setServlet(new ServletContainer()) ;
 		return restServlet;
@@ -130,5 +135,11 @@ public class Scanalyzer {
 		ServletHolder staticServlet = new ServletHolder() ;
 		staticServlet.setServlet(new StaticContentServlet());
 		return staticServlet ;
+	}
+
+	private static FilterHolder createAuthFilter() {
+		FilterHolder fh = new FilterHolder() ;
+		fh.setFilter(new AuthFilter()) ;
+		return fh ;
 	}
 }

@@ -2,10 +2,12 @@ package com.zanclus.scanalyzer.domain.entities;
 
 import java.io.Serializable;
 import java.util.Date;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,7 +18,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -24,10 +25,8 @@ import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
 
@@ -38,7 +37,6 @@ import lombok.experimental.Builder;
 @Entity
 @Table(name="SCANS")
 @Data
-@EqualsAndHashCode(callSuper=true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,12 +44,16 @@ import lombok.experimental.Builder;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(propOrder={"id", "hostId", "scanTime", "scanResults"})
 @ApiModel(value="The complete output from NMAP for a given scan run")
-public class Scan extends IndexedEntity implements Serializable {
+public class Scan implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1052090085773740172L;
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id ;
 
 	@Column(name="scan_time", nullable=false, updatable=false, insertable=true)
 	@ApiModelProperty(value="The date/time at which this scan was run", required=true)
