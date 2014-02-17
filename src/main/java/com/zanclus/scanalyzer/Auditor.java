@@ -4,15 +4,12 @@
 package com.zanclus.scanalyzer;
 
 import javax.persistence.EntityManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
-import com.google.gson.Gson;
 import com.zanclus.scanalyzer.domain.entities.AuditEntry;
 import com.zanclus.scanalyzer.domain.entities.User;
 import com.zanclus.scanalyzer.listeners.WebContext;

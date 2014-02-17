@@ -12,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.google.gson.annotations.Expose;
-
 import lombok.Data;
 
 /**
@@ -37,7 +35,6 @@ public class Token implements Serializable {
 	private String token = UUID.randomUUID().toString() ;
 
 	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-	@Expose(serialize = false)
 	private User user ;
 
 	public String getUser() {

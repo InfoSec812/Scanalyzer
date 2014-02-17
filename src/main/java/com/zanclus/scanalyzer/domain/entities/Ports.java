@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.gson.annotations.Expose;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.zanclus.scanalyzer.domain.entities.Host;
@@ -58,7 +57,6 @@ public class Ports implements Serializable {
 	private Date scanTime;
 
 	@ManyToOne(cascade=CascadeType.MERGE)
-	@Expose(serialize = false)
 	@ApiModelProperty(value="The host associated with this scan", required=true)
 	private Host host;
 

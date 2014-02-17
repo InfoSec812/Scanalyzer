@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.google.gson.annotations.Expose;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -78,16 +77,13 @@ public class User implements Serializable {
 	@ApiModelProperty("Is this user's account allowed admin privileges?")
 	private Boolean admin = Boolean.FALSE ;
 
-	@Expose(serialize = false)
 	@OneToMany(cascade = ALL, orphanRemoval = true, mappedBy = "user", fetch=FetchType.EAGER)
 	private List<Token> tokens = new ArrayList<>() ;
 
-	@Expose(serialize = false)
 	@OneToMany(cascade=ALL, orphanRemoval=true)
 	private List<Host> hosts = new ArrayList<>() ;
 
 	@Transient
-	@Expose(serialize = false)
 	private Logger log = LoggerFactory.getLogger(User.class) ;
 
 	public User(Long id, String givenName, String familyName, String login,
