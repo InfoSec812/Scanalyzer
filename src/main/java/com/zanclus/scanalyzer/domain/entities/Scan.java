@@ -2,6 +2,7 @@ package com.zanclus.scanalyzer.domain.entities;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,13 +19,16 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.gson.annotations.Expose;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -65,6 +69,7 @@ public class Scan implements Serializable {
 
 	@ManyToOne(cascade = CascadeType.MERGE)
 	@XmlTransient
+	@Expose(serialize = false)
 	@ApiModelProperty(value="The host associated with this scan run", required=true)
 	private Host target ;
 

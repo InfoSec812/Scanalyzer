@@ -27,11 +27,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.gson.annotations.Expose;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.zanclus.scanalyzer.ScanRunner;
@@ -84,6 +83,7 @@ public class Host implements Serializable {
 	private Boolean active = Boolean.TRUE ;
 
 	@ManyToOne
+	@Expose(serialize = false)
 	private User owner ;
 
 	@Column(nullable=true)
@@ -91,11 +91,13 @@ public class Host implements Serializable {
 	private String operatingSystem ;
 
 	@OneToMany(mappedBy="target", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	@Expose(serialize = false)
 	@ApiModelProperty(value="The scan history associated with this host", required=false)
 	private List<Scan> scans = new ArrayList<>() ;
 
 	@OneToMany(mappedBy="host", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@OrderBy("scanTime ASC")
+	@Expose(serialize = false)
 	@ApiModelProperty(value="The ports history associated with this host", required=false)
 	private List<Ports> portHistory = new ArrayList<>() ;
 
@@ -152,6 +154,16 @@ public class Host implements Serializable {
 	@XmlElement(name="portHistory")
 	public String getPortsReference() {
 		return "/rest/hosts/id/"+this.id+"/portHistory" ;
+	}
+
+	@XmlTransient
+	public User getOwner() {
+		return owner ;
+	}
+
+	@XmlElement(name="owner")
+	public String getOwnerRef() {
+		return "/rest/user/"+owner.getId() ;
 	}
 
 	public void setAddress(String address) throws UnknownHostException {

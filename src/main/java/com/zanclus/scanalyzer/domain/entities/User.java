@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.Long;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,12 +18,16 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.gson.annotations.Expose;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
@@ -41,7 +46,10 @@ import static javax.persistence.CascadeType.ALL;
 @ApiModel(value="A User of this service.")
 public class User implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7044515514440326568L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -69,14 +77,17 @@ public class User implements Serializable {
 
 	@ApiModelProperty("Is this user's account allowed admin privileges?")
 	private Boolean admin = Boolean.FALSE ;
-	
+
+	@Expose(serialize = false)
 	@OneToMany(cascade = ALL, orphanRemoval = true, mappedBy = "user", fetch=FetchType.EAGER)
 	private List<Token> tokens = new ArrayList<>() ;
 
+	@Expose(serialize = false)
 	@OneToMany(cascade=ALL, orphanRemoval=true)
 	private List<Host> hosts = new ArrayList<>() ;
 
 	@Transient
+	@Expose(serialize = false)
 	private Logger log = LoggerFactory.getLogger(User.class) ;
 
 	public User(Long id, String givenName, String familyName, String login,

@@ -67,8 +67,9 @@ public class UserService {
 		} else {
 			if (up.getUser().getAdmin()) {
 				UserDAO dao = new UserDAO(up.getUser());
-				Auditor.writeAuditEntry(up.getUser(), "create", newUser) ;
-				return dao.create(newUser);
+				User retVal = dao.create(newUser);
+				Auditor.writeAuditEntry(up.getUser(), "create", User.class, retVal) ;
+				return retVal ;
 			} else {
 				throw new WebApplicationException(Status.UNAUTHORIZED) ;
 			}
@@ -96,7 +97,7 @@ public class UserService {
 			if (up.getUser().getAdmin()) {
 				UserDAO dao = new UserDAO(up.getUser());
 				User target = dao.findById(id) ;
-				Auditor.writeAuditEntry(up.getUser(), "delete", target) ;
+				Auditor.writeAuditEntry(up.getUser(), "delete", User.class, target) ;
 				dao.delete(id) ;
 				
 				Response retVal = new ResponseBuilderImpl().status(202).build() ;
@@ -124,8 +125,9 @@ public class UserService {
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
 			UserDAO dao = new UserDAO(up.getUser()) ;
-			Auditor.writeAuditEntry(up.getUser(), "update", updateUser) ;
-			return dao.update(updateUser) ;
+			User retVal = dao.update(updateUser) ;
+			Auditor.writeAuditEntry(up.getUser(), "update", User.class, retVal) ;
+			return retVal ;
 		}
 	}
 
@@ -166,7 +168,7 @@ public class UserService {
 		log.debug("Preparing to create new Token and associate it with user: "+login+":"+password+":"+id) ;
 		Token retVal = dao.getNewTokenForUser(id, login, password) ;
 
-		Auditor.writeAuditEntry(up.getUser(), "create", retVal) ;
+		Auditor.writeAuditEntry(up.getUser(), "create", Token.class, retVal) ;
 		return retVal ;
 	}
 }

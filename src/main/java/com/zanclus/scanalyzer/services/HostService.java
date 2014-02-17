@@ -185,7 +185,7 @@ public class HostService {
 			Host retVal = null;
 			try {
 				retVal = dao.addHost(address) ;
-				Auditor.writeAuditEntry(up.getUser(), "create", retVal) ;
+				Auditor.writeAuditEntry(up.getUser(), "create", Host.class, retVal) ;
 			} catch (EntityExistsException ee) {
 				log.warn(ee.getLocalizedMessage(), ee);
 				throw new WebApplicationException(ee, Status.CONFLICT);
@@ -211,7 +211,7 @@ public class HostService {
 		} else {
 			HostDAO dao = new HostDAO(up.getUser()) ;
 			Host retVal = dao.create(host) ;
-			Auditor.writeAuditEntry(up.getUser(), "create", retVal) ;
+			Auditor.writeAuditEntry(up.getUser(), "create", Host.class, retVal) ;
 			return retVal ;
 		}
 	}
@@ -235,7 +235,7 @@ public class HostService {
 				HostDAO dao = new HostDAO(up.getUser()) ;
 				Host target = dao.findById(id) ;
 
-				Auditor.writeAuditEntry(up.getUser(), "delete", target) ;
+				Auditor.writeAuditEntry(up.getUser(), "delete", Host.class, target) ;
 				dao.delete(id) ;
 			} catch (Throwable t) {
 				log.warn(t.getLocalizedMessage(), t) ;
@@ -263,7 +263,7 @@ public class HostService {
 			log.info("Processing PUT request for host ID '" + updates.getId() + "'");
 			HostDAO dao = new HostDAO(up.getUser()) ;
 			Host updatedHost = dao.update(updates) ;
-			Auditor.writeAuditEntry(up.getUser(), "update", updatedHost) ;
+			Auditor.writeAuditEntry(up.getUser(), "update", Host.class, updatedHost) ;
 			
 			Response retVal = new ResponseBuilderImpl().entity(updatedHost).status(204).build() ;
 			return retVal ;
