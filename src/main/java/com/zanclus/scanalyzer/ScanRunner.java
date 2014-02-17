@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -20,10 +19,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.zanclus.scanalyzer.domain.access.HostDAO;
 import com.zanclus.scanalyzer.domain.access.PortsDAO;
 import com.zanclus.scanalyzer.domain.access.ScanDAO;
@@ -88,13 +85,16 @@ public class ScanRunner extends Thread {
 							.scanResults(nmapOutput.toString())
 							.scanTime(new Date())
 							.build();
+					ScanDAO sDao = new ScanDAO() ;
+					log.info("\n\nNMAP OUTPUT:\n\n" + scanResults.getScanResults() + "\n\n");
+					scanResults = sDao.create(scanResults) ;
 					HostDAO hDao = new HostDAO() ;
-					Host updated = hDao.findById(target.getId()) ;
+					Host updated = hDao.adminFindById(target.getId()) ;
 					updated.setLastScanned(scanResults.getScanTime()) ;
 					if (operatingSystem!=null) {
 						updated.setOperatingSystem(operatingSystem) ;
 					}
-					hDao.update(updated) ;
+					hDao.adminUpdate(updated) ;
 					scanResults.setTarget(updated) ;
 					
 					// Sort the port lines for later comparison
@@ -114,13 +114,11 @@ public class ScanRunner extends Thread {
 					PortsDAO pDao = new PortsDAO() ;
 					portSet.setHost(updated) ;
 					pDao.create(portSet) ;
-					ScanDAO sDao = new ScanDAO() ;
-					log.info("\n\nNMAP OUTPUT:\n\n" + scanResults.getScanResults() + "\n\n");
-					scanResults = sDao.create(scanResults) ;
+					sDao.update(scanResults) ;
 
 					// Check to see if this latest scan matches the most recent previous scan
 					// If they do not match, send a warning e-mail.
-					List<Ports> lastTwoScans = pDao.getPagedPortsHistoryByHostId(updated.getId(), 2, 0) ;
+					List<Ports> lastTwoScans = pDao.getLastTwoScans(updated.getId()) ;
 					if (lastTwoScans.size()==2) {
 						if (!(lastTwoScans.get(0).getPortStatus().toLowerCase()
 								.contentEquals(lastTwoScans.get(1)

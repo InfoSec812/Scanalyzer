@@ -49,6 +49,7 @@ public class ScanPoller implements Job {
 		em.getTransaction().begin() ;
 		List<Host> hostList = em.createQuery("FROM Host h WHERE (h.lastScanned<=:cutoff OR h.lastScanned IS NULL) AND h.active=true", Host.class).setParameter("cutoff", cal.getTime()).getResultList() ;
 		em.getTransaction().commit() ;
+		em.close() ;
 
 		for (Host host: hostList) {
 			WebContext.addScanToQueue(new ScanRunner(host)) ;
