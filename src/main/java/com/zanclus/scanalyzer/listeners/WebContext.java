@@ -4,15 +4,19 @@
 package com.zanclus.scanalyzer.listeners;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.zanclus.scanalyzer.ScanRunner;
 import com.zanclus.scanalyzer.domain.entities.User;
 
@@ -27,15 +31,14 @@ public class WebContext implements ServletContextListener {
 
 	private static EntityManagerFactory emf = null ;
 
-	private static HashMap<String, String> config = null ;
+	private static Map<String, String> config = null ;
 
 	private static ExecutorService scanPool = null ;
 
-	private static Logger log = null ;
+	private static final Logger LOG = LoggerFactory.getLogger(WebContext.class) ;
 
 	public WebContext() {
 		super() ;
-		log = LoggerFactory.getLogger(WebContext.class) ;
 	}
 
 	/* (non-Javadoc)
@@ -44,8 +47,8 @@ public class WebContext implements ServletContextListener {
 	@SuppressWarnings("unchecked")   // Because Java 7 still has no ability to check parameterized types.... Booo!!
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		log.info("ServletContextListener loading.") ;
-		config = (HashMap<String, String>) sce.getServletContext().getAttribute("config") ;
+		LOG.info("ServletContextListener loading.") ;
+		config = (Map<String, String>) sce.getServletContext().getAttribute("config") ;
 		emf = Persistence.createEntityManagerFactory("scanalyzer", config) ;
 
 		// For in-memory databases which are not persistent, create a default admin account...
@@ -54,7 +57,7 @@ public class WebContext implements ServletContextListener {
 		em.getTransaction().begin();
 		int count = em.createQuery("FROM User u WHERE u.admin=true", User.class).getResultList().size() ;
 		if (count==0) {
-			log.info("No admin accounts currently exist, we'll create one for you.") ;
+			LOG.info("No admin accounts currently exist, we'll create one for you.") ;
 			User adminUser = User.builder()
 					.familyName("Administrator")
 					.givenName("Systems")
@@ -68,7 +71,7 @@ public class WebContext implements ServletContextListener {
 		}
 		em.getTransaction().commit();
 		em.close() ;
-		log.info("Default admin account created");
+		LOG.info("Default admin account created");
 
 		scanPool = Executors.newFixedThreadPool(Integer.parseInt(config.get("scanalyzer.threads"))) ;
 	}
@@ -88,7 +91,7 @@ public class WebContext implements ServletContextListener {
 		return emf.createEntityManager() ;
 	}
 
-	public static HashMap<String, String> getConfig() {
+	public static Map<String, String> getConfig() {
 		if (config==null) {
 			config = new HashMap<>() ;
 		}

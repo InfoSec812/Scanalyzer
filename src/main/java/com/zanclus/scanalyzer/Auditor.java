@@ -20,8 +20,13 @@ import com.zanclus.scanalyzer.listeners.WebContext;
  */
 public class Auditor {
 
+	private Auditor() {
+		super() ;
+	}
+
+	private static final Logger LOG = LoggerFactory.getLogger(Auditor.class) ;
+
 	public static <T> void writeAuditEntry(User user, String operation, Class<T> clazz, T entity) {
-		Logger log = LoggerFactory.getLogger(Auditor.class) ;
 		EntityManager em = WebContext.getEntityManager() ;
 		ObjectMapper mapper = new ObjectMapper() ;
 		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
@@ -30,14 +35,14 @@ public class Auditor {
 		try {
 			content = mapper.writeValueAsString(entity);
 		} catch (JsonProcessingException e) {
-			log.error("Unable to serialize audit entity", e) ;
+			LOG.error("Unable to serialize audit entity", e) ;
 		}
-		log.debug(content) ;
+		LOG.debug(content) ;
 		em.getTransaction().begin() ;
-		user = em.find(User.class, user.getId()) ;
+		User validUser = em.find(User.class, user.getId()) ;
 		AuditEntry newEntry = AuditEntry.builder()
 									.type(entity.getClass().getCanonicalName())
-									.user(user)
+									.user(validUser)
 									.operation(operation)
 									.content(content)
 									.build() ;

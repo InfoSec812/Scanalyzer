@@ -110,7 +110,7 @@ public class HostDAO extends GenericDAO<Host, Long> {
 			em = WebContext.getEntityManager();
 			em.getTransaction().begin();
 			Host h = em.find(Host.class, entity.getId()) ;
-			if (h.getOwner().getId()==user.getId()) {
+			if (h.getOwner().getId().equals(user.getId())) {
 				h = em.merge(entity) ;
 			} else {
 				throw new WebApplicationException(Status.NOT_FOUND) ;
@@ -128,21 +128,23 @@ public class HostDAO extends GenericDAO<Host, Long> {
 	 * @throws UnknownHostException 
 	 */
 	public Host addHost(String address) throws UnknownHostException {
-		em = WebContext.getEntityManager() ;
-		em.getTransaction().begin() ;
-		Host newHost = Host.builder()
-						.active(true)
-						.added(new Date())
-						.owner(user)
-						.address(InetAddress.getByName(address).getAddress())
-						.build() ;
+		Host newHost = null ;
 		try {
+			em = WebContext.getEntityManager() ;
+			em.getTransaction().begin() ;
+			newHost = Host.builder()
+							.active(true)
+							.added(new Date())
+							.owner(user)
+							.address(InetAddress.getByName(address).getAddress())
+							.build() ;
 			em.persist(newHost) ;
 			em.getTransaction().commit() ;
+			em.close() ;
 		} catch (Exception e) {
+			LOG.error(e.getLocalizedMessage(), e);
 			throw e ;
 		}
-		em.close() ;
 		
 		return newHost ;
 	}

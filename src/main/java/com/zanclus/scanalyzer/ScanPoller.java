@@ -23,11 +23,10 @@ import com.zanclus.scanalyzer.listeners.WebContext;
  */
 public class ScanPoller implements Job {
 
-	Logger log = null ;
+	private static final Logger LOG = LoggerFactory.getLogger(ScanPoller.class) ;
 
 	public ScanPoller() {
 		super() ;
-		log = LoggerFactory.getLogger(ScanPoller.class) ;
 	}
 
 	@Override
@@ -39,12 +38,12 @@ public class ScanPoller implements Job {
 		try {
 			interval = Integer.parseInt(WebContext.getProp("scanalyzer.interval", "3600")) ;
 		} catch (NumberFormatException nfe) {
+			LOG.warn("Unable to convert '"+WebContext.getProp("scanalyzer.interval", "3600")+"' to an Integer for the scan interval value.", nfe);
 			interval = 3600 ;
-			
 		}
 
 		Calendar cal = new GregorianCalendar() ;
-		cal.add(GregorianCalendar.SECOND, (0-interval)) ;
+		cal.add(GregorianCalendar.SECOND, 0-interval) ;
 
 		em.getTransaction().begin() ;
 		List<Host> hostList = em.createQuery("FROM Host h WHERE (h.lastScanned<=:cutoff OR h.lastScanned IS NULL) AND h.active=true", Host.class).setParameter("cutoff", cal.getTime()).getResultList() ;

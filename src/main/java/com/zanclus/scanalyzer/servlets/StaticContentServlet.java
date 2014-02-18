@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.servlets;
 
 import java.io.BufferedInputStream;
@@ -26,11 +23,10 @@ public class StaticContentServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -5548898183035046413L;
 
-	private Logger log ;
+	private static final Logger LOG = LoggerFactory.getLogger(StaticContentServlet.class) ;
 
 	public StaticContentServlet() {
 		super() ;
-		log = LoggerFactory.getLogger(this.getClass()) ;
 	}
 
 	@Override
@@ -46,7 +42,7 @@ public class StaticContentServlet extends HttpServlet {
 		try (InputStream contentInputStream = this.getClass().getClassLoader().getResourceAsStream(fileName)) {
 			BufferedInputStream reader = new BufferedInputStream(contentInputStream) ;
 			byte[] buffer = new byte[1024] ;
-			log.debug("Loading content for page: "+fileName) ;
+			LOG.debug("Loading content for page: "+fileName) ;
 			int numRead = 0 ;
 			int byteCount = 0 ;
 			OutputStream out = resp.getOutputStream() ;

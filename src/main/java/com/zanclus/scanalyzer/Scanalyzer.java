@@ -2,7 +2,9 @@ package com.zanclus.scanalyzer ;
 
 import java.util.EnumSet;
 import java.util.Map;
+
 import javax.servlet.DispatcherType;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -17,6 +19,9 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
 import com.zanclus.scanalyzer.filters.AuthFilter;
@@ -32,12 +37,21 @@ public class Scanalyzer {
 
 	private static Map<String, String> config ;
 
+	private static final Logger LOG = LoggerFactory.getLogger(Scanalyzer.class) ;
+
+	/**
+	 * Private constructor for application startup class.
+	 */
+	private Scanalyzer() {
+		super() ;
+	}
+
 	/**
 	 * Start the scAnalyzer application.
 	 * @param args The command-line arguments
 	 * @throws Exception If there is a problem starting up the embedded Jetty servlet container
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 
 		// Parse the command-line arguments
 		Init init = new Init(args) ;
@@ -71,13 +85,17 @@ public class Scanalyzer {
 			context.addFilter(createAuthFilter(), "/*",
 					EnumSet.of(DispatcherType.REQUEST));
 			// Start Jetty embedded
-			server.start();
-			// This MUST be run AFTER the Jetty server starts because it needs access 
-			// to the ServletContextListener's state information
-			// Start the scanning poller
-			startPollingScheduler();
-			// Join the Jetty master thread and wait for it to exit.
-			server.join();
+			try {
+				server.start();
+				// This MUST be run AFTER the Jetty server starts because it needs access 
+				// to the ServletContextListener's state information
+				// Start the scanning poller
+				startPollingScheduler();
+				// Join the Jetty master thread and wait for it to exit.
+				server.join();
+			} catch (Exception e) {
+				LOG.error("Unable to launch the Jetty servlet container.", e) ;
+			}
 		}
 	}
 

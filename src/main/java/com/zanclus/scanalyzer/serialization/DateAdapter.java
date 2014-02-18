@@ -1,10 +1,9 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.serialization;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
@@ -19,7 +18,7 @@ public class DateAdapter extends XmlAdapter<String,Date> {
 	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
 	 */
 	@Override
-	public Date unmarshal(String v) throws Exception {
+	public Date unmarshal(String v) throws ParseException {
 		return sdf.parse(v) ;
 	}
 
@@ -27,7 +26,7 @@ public class DateAdapter extends XmlAdapter<String,Date> {
 	 * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
 	 */
 	@Override
-	public String marshal(Date v) throws Exception {
+	public String marshal(Date v) throws ParseException {
 		return sdf.format(v) ;
 	}
 

@@ -122,10 +122,12 @@ public class Init {
 		}
 
 		if (cFile.exists() && cFile.canRead()) {
-			configFile.load(new FileInputStream(cFile));
-			for (Object key : configFile.keySet()) {
-				if (config.get(key) == null) {
-					config.put((String)key, (String)configFile.get(key));
+			try (FileInputStream fis = new FileInputStream(cFile)) {
+				configFile.load(fis) ;
+				for (Map.Entry<Object,Object> item : configFile.entrySet()) {
+					if (config.get(item.getKey()) == null) {
+						config.put((String)item.getKey(), (String)configFile.get(item.getValue()));
+					}
 				}
 			}
 		}
@@ -139,15 +141,14 @@ public class Init {
 		Properties defaults = new Properties();
 		try {
 			defaults.load(this.getClass().getClassLoader().getResourceAsStream("scanalyzer.properties"));
-			for (Object key : defaults.keySet()) {
+			for (Map.Entry<Object,Object> item : defaults.entrySet()) {
 				// Set default values for properties which were not already set.
-				if (config.get(key) == null) {
-					config.put((String)key, (String)defaults.get(key));
+				if (config.get(item.getKey()) == null) {
+					config.put((String)item.getKey(), (String)defaults.get(item.getValue()));
 				}
 			}
 		} catch (IOException e) {
-			System.out.println("ERROR: Unable to load default properties.");
-			e.printStackTrace();
+			LOG.error("Unable to load default properties.", e);
 		}
 
 	}

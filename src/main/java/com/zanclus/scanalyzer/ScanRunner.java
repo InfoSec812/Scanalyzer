@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -19,8 +21,10 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.zanclus.scanalyzer.domain.access.HostDAO;
 import com.zanclus.scanalyzer.domain.access.PortsDAO;
 import com.zanclus.scanalyzer.domain.access.ScanDAO;
@@ -46,7 +50,7 @@ public class ScanRunner extends Thread {
 	 * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
 	 *
 	 */
-	private class StreamGobbler extends Thread {
+	private static class StreamGobbler extends Thread {
 		private InputStream is ;
 
 		private Host target ;
@@ -69,19 +73,8 @@ public class ScanRunner extends Thread {
 			String operatingSystem = null ;
 
 			// try/with - Such awesome, very technology
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
-				String line = null ;
-				while ((line = br.readLine())!=null) {
-					nmapOutput.append(line) ;
-					nmapOutput.append("\n") ;
-					if (persist && line.matches("^[0-9]{1,5}+/(tcp|udp).*$")) {
-						if (line.trim().length()>0) {
-							ports.add(line) ;
-						}
-					} else if (line.startsWith("OS details: ")) {
-						operatingSystem = line.split(": ")[1] ;
-					}
-				}
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")))) {
+				operatingSystem = parseNmapOutput(nmapOutput, ports, operatingSystem, br);
 				if (persist) {
 					PortsDAO pDao = new PortsDAO() ;
 
@@ -99,12 +92,37 @@ public class ScanRunner extends Thread {
 						sendWarningMail(updatedHost, lastTwoScans);
 					}
 				} else {
-					LOG.error("\n\nNMAP ERROR:\n\n"
-							+ nmapOutput.toString() + "\n\n") ;
+					LOG.error("\n\nNMAP ERROR:\n\n" + nmapOutput.toString() + "\n\n") ;
 				}
 			} catch (IOException ioe) {
 				LOG.error(ioe.getLocalizedMessage(), ioe) ;
 			}
+		}
+
+		/**
+		 * @param nmapOutput
+		 * @param ports
+		 * @param operatingSystem
+		 * @param br
+		 * @return
+		 * @throws IOException
+		 */
+		private String parseNmapOutput(StringBuilder nmapOutput,
+				List<String> ports, String operatingSystem, BufferedReader br)
+				throws IOException {
+			String line;
+			while ((line = br.readLine())!=null) {
+				nmapOutput.append(line) ;
+				nmapOutput.append("\n") ;
+				if (persist && line.matches("^[0-9]{1,5}+/(tcp|udp).*$")) {
+					if (line.trim().length()>0) {
+						ports.add(line) ;
+					}
+				} else if (line.startsWith("OS details: ")) {
+					operatingSystem = line.split(": ")[1] ;
+				}
+			}
+			return operatingSystem;
 		}
 
 		/**

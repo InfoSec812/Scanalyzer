@@ -14,6 +14,7 @@ public class AuthFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		// Intentionally left blank
 	}
 
 	@Override
@@ -23,9 +24,9 @@ public class AuthFilter implements Filter {
 		if (token==null || token.trim().length()<1) {
 			String login = ((HttpServletRequest)request).getHeader("login") ;
 			String password = ((HttpServletRequest)request).getHeader("password") ;
-			chain.doFilter(new UserRoleRequestWrapper(login, password, ((HttpServletRequest)request)), response);
+			chain.doFilter(new UserRoleRequestWrapper(login, password, (HttpServletRequest)request), response);
 		} else {
-			chain.doFilter(new UserRoleRequestWrapper(token, ((HttpServletRequest)request)), response) ;
+			chain.doFilter(new UserRoleRequestWrapper(token, (HttpServletRequest)request), response) ;
 		}
 	}
 

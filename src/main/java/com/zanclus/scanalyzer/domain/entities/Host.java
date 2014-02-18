@@ -116,7 +116,7 @@ public class Host implements Serializable {
 			retVal = InetAddress.getByAddress(address) ;
 			return retVal.getHostAddress();
 		} catch (UnknownHostException e) {
-			LOG.warn(e.getLocalizedMessage(), e) ;
+			LOG.warn("Error converting byte[] to an InetAddress for return from Host entity", e) ;
 			return null;
 		}
 	}

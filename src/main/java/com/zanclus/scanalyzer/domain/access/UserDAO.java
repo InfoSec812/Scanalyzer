@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.domain.access;
 
 import javax.ws.rs.WebApplicationException;
@@ -29,7 +26,7 @@ public class UserDAO extends GenericDAO<User, Long> {
 			return super.findById(id) ;
 		} else {
 			User retVal = super.findById(id) ;
-			if (retVal.getId()!=user.getId()) {
+			if (retVal.getId().equals(user.getId())) {
 				throw new WebApplicationException(Status.NOT_FOUND) ;
 			} else {
 				return retVal ;
@@ -43,7 +40,7 @@ public class UserDAO extends GenericDAO<User, Long> {
 			return super.update(entity) ;
 		} else {
 			User retVal = super.findById(entity.getId()) ;
-			if (retVal.getId()!=user.getId()) {
+			if (retVal.getId().equals(user.getId())) {
 				throw new WebApplicationException(Status.NOT_FOUND) ;
 			} else {
 				return super.update(entity) ;

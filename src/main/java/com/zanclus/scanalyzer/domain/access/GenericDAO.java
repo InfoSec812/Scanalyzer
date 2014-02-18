@@ -16,7 +16,7 @@ import com.zanclus.scanalyzer.listeners.WebContext;
  * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  *
  */
-public class GenericDAO<T, PK extends Serializable> {
+public class GenericDAO<T, K extends Serializable> {
 
 	protected EntityManager em ;
 	protected Class<T> entityClass ;
@@ -29,7 +29,7 @@ public class GenericDAO<T, PK extends Serializable> {
 		entityClass = (Class<T>) genericSuperClass.getActualTypeArguments()[0] ;
 	}
 
-	public T findById(PK id) {
+	public T findById(K id) {
 		em = WebContext.getEntityManager() ;
 		em.getTransaction().begin() ;
 		T retVal = em.find(entityClass, id) ;
@@ -47,7 +47,7 @@ public class GenericDAO<T, PK extends Serializable> {
 		return retVal ;
 	}
 
-	public void delete(PK id) {
+	public void delete(K id) {
 		em = WebContext.getEntityManager() ;
 		em.getTransaction().begin() ;
 		em.remove(em.find(entityClass, id)) ;

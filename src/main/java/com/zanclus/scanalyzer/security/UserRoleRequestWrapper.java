@@ -26,11 +26,10 @@ public class UserRoleRequestWrapper extends HttpServletRequestWrapper {
 
 	private User user;
 	private HttpServletRequest realRequest;
-	private Logger log ;
+	private static final Logger LOG = LoggerFactory.getLogger(UserRoleRequestWrapper.class) ;
 
 	public UserRoleRequestWrapper(String token, HttpServletRequest request) {
 		super(request);
-		log = LoggerFactory.getLogger(UserRoleRequestWrapper.class) ;
 
 		if (token!=null && token.trim().length()>0) {
 			EntityManager em = WebContext.getEntityManager() ;
@@ -42,7 +41,7 @@ public class UserRoleRequestWrapper extends HttpServletRequestWrapper {
 				em.getTransaction().commit() ;
 				em.close() ;
 			} catch (Exception e) {
-				log.info("Unable to map token to user.", e) ;
+				LOG.info("Unable to map token to user.", e) ;
 			}
 		}
 		this.realRequest = request;
@@ -50,7 +49,7 @@ public class UserRoleRequestWrapper extends HttpServletRequestWrapper {
 
 	public UserRoleRequestWrapper(String login, String password, HttpServletRequest request) {
 		super(request);
-		log = LoggerFactory.getLogger(UserRoleRequestWrapper.class) ;
+		LOG = LoggerFactory.getLogger(UserRoleRequestWrapper.class) ;
 		
 		if (login!=null && login.trim().length()>0 && password!=null && password.trim().length()>0) {
 			EntityManager em = WebContext.getEntityManager() ;
@@ -66,7 +65,7 @@ public class UserRoleRequestWrapper extends HttpServletRequestWrapper {
 					user = null ;
 				}
 			} catch (Exception e) {
-				log.info("Unable to map token to user.", e) ;
+				LOG.info("Unable to map token to user.", e) ;
 			}
 		}
 		this.realRequest = request;

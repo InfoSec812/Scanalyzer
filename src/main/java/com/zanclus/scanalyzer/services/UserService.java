@@ -42,11 +42,10 @@ import com.zanclus.scanalyzer.security.ScanalyzerUserPrincipal;
 @Api(value="/user", description="ReSTful enpoints related to user management")
 public class UserService {
 
-	private Logger log ;
+	private static final Logger LOG = LoggerFactory.getLogger(UserService.class) ;
 
 	public UserService() {
 		super() ;
-		log = LoggerFactory.getLogger(UserService.class) ;
 	}
 
 	@POST
@@ -62,14 +61,13 @@ public class UserService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
 			if (up.getUser().getAdmin()) {
 				UserDAO dao = new UserDAO(up.getUser());
-				User retVal = dao.create(newUser);
-				Auditor.writeAuditEntry(up.getUser(), "create", User.class, retVal) ;
-				return retVal ;
+				Auditor.writeAuditEntry(up.getUser(), "create", User.class, newUser) ;
+				return dao.create(newUser);
 			} else {
 				throw new WebApplicationException(Status.UNAUTHORIZED) ;
 			}
@@ -91,7 +89,7 @@ public class UserService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
 			if (up.getUser().getAdmin()) {
@@ -121,7 +119,7 @@ public class UserService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
 			UserDAO dao = new UserDAO(up.getUser()) ;
@@ -165,7 +163,7 @@ public class UserService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		UserDAO dao = new UserDAO(up.getUser()) ;
-		log.debug("Preparing to create new Token and associate it with user: "+login+":"+password+":"+id) ;
+		LOG.debug("Preparing to create new Token and associate it with user: "+login+":"+password+":"+id) ;
 		Token retVal = dao.getNewTokenForUser(id) ;
 
 		Auditor.writeAuditEntry(up.getUser(), "create", Token.class, retVal) ;
