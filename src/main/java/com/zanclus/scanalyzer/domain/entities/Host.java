@@ -27,6 +27,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -58,6 +61,8 @@ public class Host implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 4830208317277697554L;
+
+	private static final Logger LOG = LoggerFactory.getLogger(Host.class) ;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -111,6 +116,7 @@ public class Host implements Serializable {
 			retVal = InetAddress.getByAddress(address) ;
 			return retVal.getHostAddress();
 		} catch (UnknownHostException e) {
+			LOG.warn(e.getLocalizedMessage(), e) ;
 			return null;
 		}
 	}

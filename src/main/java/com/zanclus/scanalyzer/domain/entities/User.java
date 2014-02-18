@@ -1,10 +1,8 @@
 package com.zanclus.scanalyzer.domain.entities;
 
 import java.io.Serializable;
-import java.lang.Long;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,15 +16,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
@@ -84,11 +79,11 @@ public class User implements Serializable {
 	private List<Host> hosts = new ArrayList<>() ;
 
 	@Transient
-	private Logger log = LoggerFactory.getLogger(User.class) ;
+	private static final Logger LOG = LoggerFactory.getLogger(User.class) ;
 
 	public User(Long id, String givenName, String familyName, String login,
 			String pass, String email, Boolean enabled, Boolean active, Boolean admin, 
-			List<Token> tokens, List<Host> hosts, Logger log) {
+			List<Token> tokens, List<Host> hosts) {
 		super();
 		this.id = id ;
 		this.givenName = givenName ;
@@ -107,7 +102,7 @@ public class User implements Serializable {
 
 	public boolean validatePassword(String plaintext) {
 		if (this.password==null) {
-			log.warn("Persisted password value is null.") ;
+			LOG.warn("Persisted password value is null.") ;
 			return false ;
 		} else {
 			return BCrypt.checkpw(plaintext, this.password) ;

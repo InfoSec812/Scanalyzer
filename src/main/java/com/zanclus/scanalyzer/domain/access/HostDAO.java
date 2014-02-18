@@ -51,7 +51,7 @@ public class HostDAO extends GenericDAO<Host, Long> {
 			} catch (NoResultException nre) {
 				throw new WebApplicationException(nre, Status.NOT_FOUND) ;
 			} catch (Exception e) {
-				log.error(e.getLocalizedMessage(), e) ;
+				LOG.error(e.getLocalizedMessage(), e) ;
 				throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR) ;
 			}
 			em.getTransaction().commit() ;

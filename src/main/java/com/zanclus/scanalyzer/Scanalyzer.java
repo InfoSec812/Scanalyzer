@@ -1,13 +1,8 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer ;
 
 import java.util.EnumSet;
-import java.util.HashMap;
-
+import java.util.Map;
 import javax.servlet.DispatcherType;
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -22,7 +17,6 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
-
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
 import com.zanclus.scanalyzer.filters.AuthFilter;
@@ -36,7 +30,7 @@ import com.zanclus.scanalyzer.servlets.StaticContentServlet;
  */
 public class Scanalyzer {
 
-	private static HashMap<String, String> config ;
+	private static Map<String, String> config ;
 
 	/**
 	 * Start the scAnalyzer application.
@@ -49,45 +43,42 @@ public class Scanalyzer {
 		Init init = new Init(args) ;
 		config = init.getConfig() ;
 
-		// Start up the embedded Jetty Servlet container
-		Server server = new Server(Integer.parseInt(config.get("scanalyzer.port"))) ;
-		ServletContextHandler context = new ServletContextHandler() ;
-		context.setContextPath("/*") ;
-		context.setAttribute("config", config);
-		server.setHandler(context) ;
-
-		// Add a ServletContextListener for some shared resources which are expensive to generate
-		context.addEventListener(new WebContext());
-
-		// Add an instance of the Jersey servlet for ReST
-		context.addServlet(createJerseyServlet(), "/rest/*") ;
-
-		// Add an instance of the Swagger servlet to provide a nice UI for the API
-		context.addServlet(createSwaggerServlet(), "/api/*") ;
-
-		// Add a static content server so that we can include the Swagger UI in the executable JAR
-		context.addServlet(createStaticServlet(), "/static/*") ;
-
-		// Add a filter to handle attaching a user Principal to authenticated requests
-		context.addFilter(createAuthFilter(), "/rest/*", EnumSet.of(DispatcherType.REQUEST)) ;
-
-		// Add a CORS filter to allow Swagger UI to work when NOT accessed inside of the application
-		FilterHolder corsFilter = new FilterHolder(new CrossOriginFilter()) ;
-		corsFilter.setInitParameter("allowedOrigins", "*") ;
-		corsFilter.setInitParameter("allowedMethods", "GET,POST,PUT,DELETE") ;
-		context.addFilter(corsFilter, "/*", EnumSet.of(DispatcherType.REQUEST)) ;
-		context.addFilter(createAuthFilter(), "/*", EnumSet.of(DispatcherType.REQUEST)) ;
-
-		// Start Jetty embedded
-		server.start() ;
-
-		// This MUST be run AFTER the Jetty server starts because it needs access 
-		// to the ServletContextListener's state information
-		// Start the scanning poller
-		startPollingScheduler();
-
-		// Join the Jetty master thread and wait for it to exit.
-		server.join() ;
+		if (!init.shouldExit()) {
+			// Start up the embedded Jetty Servlet container
+			Server server = new Server(Integer.parseInt(config.get("scanalyzer.port")));
+			ServletContextHandler context = new ServletContextHandler();
+			context.setContextPath("/*");
+			context.setAttribute("config", config);
+			server.setHandler(context);
+			// Add a ServletContextListener for some shared resources which are expensive to generate
+			context.addEventListener(new WebContext());
+			// Add an instance of the Jersey servlet for ReST
+			context.addServlet(createJerseyServlet(), "/rest/*");
+			// Add an instance of the Swagger servlet to provide a nice UI for the API
+			context.addServlet(createSwaggerServlet(), "/api/*");
+			// Add a static content server so that we can include the Swagger UI in the executable JAR
+			context.addServlet(createStaticServlet(), "/static/*");
+			// Add a filter to handle attaching a user Principal to authenticated requests
+			context.addFilter(createAuthFilter(), "/rest/*",
+					EnumSet.of(DispatcherType.REQUEST));
+			// Add a CORS filter to allow Swagger UI to work when NOT accessed inside of the application
+			FilterHolder corsFilter = new FilterHolder(new CrossOriginFilter());
+			corsFilter.setInitParameter("allowedOrigins", "*");
+			corsFilter
+					.setInitParameter("allowedMethods", "GET,POST,PUT,DELETE");
+			context.addFilter(corsFilter, "/*",
+					EnumSet.of(DispatcherType.REQUEST));
+			context.addFilter(createAuthFilter(), "/*",
+					EnumSet.of(DispatcherType.REQUEST));
+			// Start Jetty embedded
+			server.start();
+			// This MUST be run AFTER the Jetty server starts because it needs access 
+			// to the ServletContextListener's state information
+			// Start the scanning poller
+			startPollingScheduler();
+			// Join the Jetty master thread and wait for it to exit.
+			server.join();
+		}
 	}
 
 	/**

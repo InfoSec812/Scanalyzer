@@ -2,7 +2,6 @@ package com.zanclus.scanalyzer.services;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import javax.persistence.EntityExistsException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -22,11 +21,8 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -59,11 +55,10 @@ public class HostService {
 	@Context
 	UriInfo url;
 
-	private Logger log = null;
+	private static final Logger LOG = LoggerFactory.getLogger(HostService.class);
 
 	public HostService() {
 		super();
-		log = LoggerFactory.getLogger(this.getClass());
 	}
 
 	@GET
@@ -75,18 +70,14 @@ public class HostService {
 	public Host getHostById(
 			@ApiParam(value="The ID of the host to fetch", required=true) @PathParam("id") Long hostId,
 			@Context HttpServletRequest request) {
-		log.info("Processing GET request for host ID '" + hostId + "'");
+		LOG.info("Processing GET request for host ID '" + hostId + "'");
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
 			HostDAO dao = new HostDAO(up.getUser()) ;
-			Host retVal = dao.findById(hostId) ;
-			if (retVal==null) {
-				throw new WebApplicationException(Status.NOT_FOUND) ;
-			}
-			return retVal ;
+			return dao.findById(hostId) ;
 		}
 	}
 
@@ -105,7 +96,7 @@ public class HostService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
 			ScanDAO dao = new ScanDAO(up.getUser()) ;
@@ -126,7 +117,7 @@ public class HostService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
 			PortsDAO dao = new PortsDAO(up.getUser()) ;
@@ -145,10 +136,10 @@ public class HostService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
-			log.info("Processing GET request for address '" + address + "'") ;
+			LOG.info("Processing GET request for address '" + address + "'") ;
 			byte[] inetAddress = null;
 			try {
 				inetAddress = InetAddress.getByName(address).getAddress() ;
@@ -172,13 +163,13 @@ public class HostService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
-			log.info("Request URL: "+url.getPath());
-			log.info("Processing POST request for address '" + address + "'");
+			LOG.info("Request URL: "+url.getPath());
+			LOG.info("Processing POST request for address '" + address + "'");
 			if (address == null) {
-				log.error("Address is NULL");
+				LOG.error("Address is NULL");
 			}
 	
 			HostDAO dao = new HostDAO(up.getUser());
@@ -187,10 +178,10 @@ public class HostService {
 				retVal = dao.addHost(address) ;
 				Auditor.writeAuditEntry(up.getUser(), "create", Host.class, retVal) ;
 			} catch (EntityExistsException ee) {
-				log.warn(ee.getLocalizedMessage(), ee);
+				LOG.warn(ee.getLocalizedMessage(), ee);
 				throw new WebApplicationException(ee, Status.CONFLICT);
 			} catch (Exception e) {
-				log.warn(e.getLocalizedMessage(), e);
+				LOG.warn(e.getLocalizedMessage(), e);
 				throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
 			}
 			return retVal;
@@ -206,7 +197,7 @@ public class HostService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
 			HostDAO dao = new HostDAO(up.getUser()) ;
@@ -228,7 +219,7 @@ public class HostService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
 			try {
@@ -237,12 +228,12 @@ public class HostService {
 
 				Auditor.writeAuditEntry(up.getUser(), "delete", Host.class, target) ;
 				dao.delete(id) ;
-			} catch (Throwable t) {
-				log.warn(t.getLocalizedMessage(), t) ;
+			} catch (Exception t) {
+				LOG.warn(t.getLocalizedMessage(), t) ;
 				throw new WebApplicationException(t, Status.INTERNAL_SERVER_ERROR) ;
 			}
 			
-			Response retVal = new ResponseBuilderImpl().status(202).build() ;
+			Response retVal = Response.status(202).build() ;
 			return retVal ;
 		}
 	}
@@ -256,16 +247,16 @@ public class HostService {
 			@Context HttpServletRequest request) {
 		ScanalyzerUserPrincipal up = (ScanalyzerUserPrincipal)request.getUserPrincipal() ;
 		if ((up==null) || (up.getUser()==null)) {
-			log.warn("Security context did not have a valid user attached.") ;
+			LOG.warn("Security context did not have a valid user attached.") ;
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {
-			log.info("Request URL: "+url.getPath());
-			log.info("Processing PUT request for host ID '" + updates.getId() + "'");
+			LOG.info("Request URL: "+url.getPath());
+			LOG.info("Processing PUT request for host ID '" + updates.getId() + "'");
 			HostDAO dao = new HostDAO(up.getUser()) ;
 			Host updatedHost = dao.update(updates) ;
 			Auditor.writeAuditEntry(up.getUser(), "update", Host.class, updatedHost) ;
 			
-			Response retVal = new ResponseBuilderImpl().entity(updatedHost).status(204).build() ;
+			Response retVal = Response.status(204).entity(updatedHost).build() ;
 			return retVal ;
 		}
 	}

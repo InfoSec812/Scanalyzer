@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer;
 
 import gnu.getopt.Getopt;
@@ -11,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -24,16 +22,17 @@ import org.slf4j.LoggerFactory;
  */
 public class Init {
 
-	private HashMap<String, String> config;
+	private Map<String, String> config;
+
+	private boolean shouldExit = false ;
 
 	String[] args = null;
 
-	private Logger log = null ;
+	private static final Logger LOG = LoggerFactory.getLogger(Init.class) ;
 
 	public Init(String[] args) {
 		super();
-		log = LoggerFactory.getLogger(this.getClass()) ;
-		this.args = args;
+		this.args = args.clone();
 	}
 
 	private void printUsage() {
@@ -53,7 +52,6 @@ public class Init {
 				.println("	--mailpass=<password> || -w <password>             A password with which to authenticate for sending e-mail.");
 		System.out
 				.println("	--help || -h                                       Shows this help text.");
-		System.exit(2);
 	}
 
 	/**
@@ -95,10 +93,13 @@ public class Init {
 					break;
 				case 'h':
 					printUsage();
+					shouldExit = true ;
 					break;
 				default:
 					System.out.println("Invalid argument '" + g.getOptopt() + "'");
 					printUsage();
+					shouldExit = true ;
+					break;
 			}
 		}
 	}
@@ -114,7 +115,7 @@ public class Init {
 		Properties configFile = new Properties();
 		File cFile;
 		if (config.get("scanalyzer.config") != null) {
-			log.debug("Attempting to open config file at '"+config.get("scanalyzer.config")+"'");
+			LOG.debug("Attempting to open config file at '"+config.get("scanalyzer.config")+"'");
 			cFile = new File(config.get("scanalyzer.config"));
 		} else {
 			cFile = new File("/etc/scanalyzer/scanalyzer.conf");
@@ -151,7 +152,11 @@ public class Init {
 
 	}
 
-	public HashMap<String, String> getConfig() {
+	public boolean shouldExit() {
+		return shouldExit ;
+	}
+
+	public Map<String, String> getConfig() {
 		config = new HashMap<>();
 		config.put("scanalyzer.port", "8080");
 		config.put("scanalyzer.bind", "127.0.0.1");
@@ -161,7 +166,7 @@ public class Init {
 		try {
 			this.loadConfigFile();
 		} catch (Exception e) {
-			log.error(e.getLocalizedMessage(), e) ;
+			LOG.error(e.getLocalizedMessage(), e) ;
 		}
 
 		// Set default values for any configurations settings which were not

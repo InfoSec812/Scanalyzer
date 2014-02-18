@@ -71,7 +71,7 @@ public class UserDAO extends GenericDAO<User, Long> {
 		em.persist(newToken) ;
 		em.getTransaction().commit() ;
 		em.close();
-		log.debug("Committed token transaction: "+user.getTokens().size()) ;
+		LOG.debug("Committed token transaction: "+user.getTokens().size()) ;
 		if (user.getActive()) {
 			return newToken ;
 		} else {

@@ -20,14 +20,13 @@ public class GenericDAO<T, PK extends Serializable> {
 
 	protected EntityManager em ;
 	protected Class<T> entityClass ;
-	protected Logger log = null ;
+	protected static final Logger LOG = LoggerFactory.getLogger(GenericDAO.class) ;
 
 	@SuppressWarnings("unchecked")
 	public GenericDAO() {
 		super() ;
 		ParameterizedType genericSuperClass = (ParameterizedType) getClass().getGenericSuperclass() ;
 		entityClass = (Class<T>) genericSuperClass.getActualTypeArguments()[0] ;
-		log = LoggerFactory.getLogger(entityClass) ;
 	}
 
 	public T findById(PK id) {
