@@ -1,24 +1,21 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.listeners;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import java.util.concurrent.ThreadPoolExecutor;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
+import net.gescobar.jmx.Management;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.zanclus.scanalyzer.ScanRunner;
 import com.zanclus.scanalyzer.domain.entities.User;
+import com.zanclus.scanalyzer.managment.ScanPool;
 
 /**
  * The is a ServletContextListener which set up and stores references to expensive resources like the
@@ -33,7 +30,7 @@ public class WebContext implements ServletContextListener {
 
 	private static Map<String, String> config = null ;
 
-	private static ExecutorService scanPool = null ;
+	private static ThreadPoolExecutor scanPool = null ;
 
 	private static final Logger LOG = LoggerFactory.getLogger(WebContext.class) ;
 
@@ -48,11 +45,20 @@ public class WebContext implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		LOG.info("ServletContextListener loading.") ;
-		config = (Map<String, String>) sce.getServletContext().getAttribute("config") ;
-		emf = Persistence.createEntityManagerFactory("scanalyzer", config) ;
+		WebContext.config = (Map<String, String>) sce.getServletContext().getAttribute("config") ;
+		if (WebContext.config==null) {
+			WebContext.config = new ConcurrentHashMap<>();
+		}
+		WebContext.emf = Persistence.createEntityManagerFactory("scanalyzer", WebContext.config) ;
 
-		// For in-memory databases which are not persistent, create a default admin account...
-		EntityManager em = emf.createEntityManager();
+		try {
+			Management.register(new ScanPool(), "com.zanclus.scanalyzer:type=ScanPool") ;
+		} catch (Exception e) {
+			LOG.warn("Unable to register management bean for ScanPool", e) ;
+		}
+
+		// For instances where the database does not already contain an admin account, we create one!
+		EntityManager em = WebContext.emf.createEntityManager();
 		
 		em.getTransaction().begin();
 		int count = em.createQuery("FROM User u WHERE u.admin=true", User.class).getResultList().size() ;
@@ -73,7 +79,7 @@ public class WebContext implements ServletContextListener {
 		em.close() ;
 		LOG.info("Default admin account created");
 
-		scanPool = Executors.newFixedThreadPool(Integer.parseInt(config.get("scanalyzer.threads"))) ;
+		WebContext.scanPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Integer.parseInt(config.get("scanalyzer.threads"))) ;
 	}
 
 	/* (non-Javadoc)
@@ -81,42 +87,30 @@ public class WebContext implements ServletContextListener {
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		emf.close() ;
+		WebContext.emf.close() ;
 	}
 
 	public static EntityManager getEntityManager() {
-		if (emf == null) {
+		if (WebContext.emf == null) {
 			throw new IllegalStateException("ServletContext has not yet been initialized!") ;
 		}
-		return emf.createEntityManager() ;
+		return WebContext.emf.createEntityManager() ;
 	}
 
 	public static Map<String, String> getConfig() {
-		if (config==null) {
-			config = new HashMap<>() ;
-		}
-		return config ;
+		return WebContext.config ;
 	}
 
 	public static String getProp(String key) {
-		if (config==null) {
-			config = new HashMap<>() ;
-		}
-		return config.get(key) ;
+		return WebContext.config.get(key) ;
 	}
 
 	public static String getProp(String key, String defaultVal) {
-		if (config==null) {
-			config = new HashMap<>() ;
-		}
-		return config.get(key)==null?defaultVal:config.get(key) ;
+		return WebContext.config.get(key)==null?defaultVal:config.get(key) ;
 	}
 
 	public static void setProp(String key, String value) {
-		if (config==null) {
-			config = new HashMap<>() ;
-		}
-		config.put(key, value) ;
+		WebContext.config.put(key, value) ;
 	}
 
 	/**
@@ -124,6 +118,14 @@ public class WebContext implements ServletContextListener {
 	 * @param job The pre-defined {@link ScanRunner} instance to be run inside of the thread pool
 	 */
 	public static void addScanToQueue(ScanRunner job) {
-		scanPool.submit(job) ;
+		WebContext.scanPool.submit(job) ;
+	}
+
+	public static void setThreadPoolSize(int size) {
+		WebContext.scanPool.setCorePoolSize(size) ;
+	}
+
+	public static int getThreadPoolSize() {
+		return WebContext.scanPool.getCorePoolSize() ;
 	}
 }

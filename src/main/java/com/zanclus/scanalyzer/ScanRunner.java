@@ -111,6 +111,7 @@ public class ScanRunner extends Thread {
 				List<String> ports, String operatingSystem, BufferedReader br)
 				throws IOException {
 			String line;
+			String newOperatingSystem = null ;
 			while ((line = br.readLine())!=null) {
 				nmapOutput.append(line) ;
 				nmapOutput.append("\n") ;
@@ -119,10 +120,10 @@ public class ScanRunner extends Thread {
 						ports.add(line) ;
 					}
 				} else if (line.startsWith("OS details: ")) {
-					operatingSystem = line.split(": ")[1] ;
+					newOperatingSystem = line.split(": ")[1] ;
 				}
 			}
-			return operatingSystem;
+			return newOperatingSystem==null?operatingSystem:newOperatingSystem ;
 		}
 
 		/**
@@ -225,10 +226,8 @@ public class ScanRunner extends Thread {
 		 */
 		private Session buildMailSession(Properties props) {
 			Session session = null;
-			if (WebContext.getProp("mail.smtp.auth")
-					.contentEquals("true")) {
-				session = Session.getInstance(props,
-						new Authenticator() {
+			if (WebContext.getProp("mail.smtp.auth").contentEquals("true")) {
+				session = Session.getInstance(props, new Authenticator() {
 							protected PasswordAuthentication getPasswordAuthentication() {
 								return new PasswordAuthentication(
 										WebContext

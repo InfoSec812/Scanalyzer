@@ -95,6 +95,21 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.3-1100-jdbc41</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-all</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>net.gescobar</groupId>
+			<artifactId>jmx-annotations</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>4.2.7.SP1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -108,4 +123,10 @@
 			</plugin>
 		</plugins>
 	</build>
+	<repositories>
+		<repository>
+			<id>elibom</id>
+			<url>http://repository.elibom.net/nexus/content/repositories/releases</url>
+		</repository>
+	</repositories>
 </project>

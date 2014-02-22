@@ -20,11 +20,11 @@ import com.zanclus.scanalyzer.listeners.WebContext;
  */
 public class Auditor {
 
+	private static final Logger LOG = LoggerFactory.getLogger(Auditor.class) ;
+
 	private Auditor() {
 		super() ;
 	}
-
-	private static final Logger LOG = LoggerFactory.getLogger(Auditor.class) ;
 
 	public static <T> void writeAuditEntry(User user, String operation, Class<T> clazz, T entity) {
 		EntityManager em = WebContext.getEntityManager() ;

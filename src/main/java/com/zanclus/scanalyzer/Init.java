@@ -7,9 +7,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class Init {
-
-	private Map<String, String> config;
 
 	private boolean shouldExit = false ;
 
@@ -60,7 +58,7 @@ public class Init {
 	 *            The command line arguments passed when the application was
 	 *            started.
 	 */
-	private void parseArgs(String[] args) {
+	private void parseArgs(Map<String, String> config, String[] args) {
 		LongOpt[] longopts = new LongOpt[7];
 		longopts[0] = new LongOpt("port", LongOpt.REQUIRED_ARGUMENT, null, 'p');
 		longopts[1] = new LongOpt("bind", LongOpt.REQUIRED_ARGUMENT, null, 'b');
@@ -110,7 +108,7 @@ public class Init {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	private void loadConfigFile() throws IOException, FileNotFoundException {
+	private void loadConfigFile(Map<String, String> config) throws IOException {
 		// Load the configuration from a properties file (if available)
 		Properties configFile = new Properties();
 		File cFile;
@@ -137,14 +135,16 @@ public class Init {
 	 * Set default values for any configurations settings which were not
 	 * previously configured.
 	 */
-	private void doDefaultSettings() {
+	private void doDefaultSettings(Map<String, String> config) {
 		Properties defaults = new Properties();
 		try {
 			defaults.load(this.getClass().getClassLoader().getResourceAsStream("scanalyzer.properties"));
 			for (Map.Entry<Object,Object> item : defaults.entrySet()) {
 				// Set default values for properties which were not already set.
+				LOG.debug("Checking state of key: "+(String)item.getKey()) ;
 				if (config.get(item.getKey()) == null) {
-					config.put((String)item.getKey(), (String)defaults.get(item.getValue()));
+					LOG.debug("Attempting to store: "+(String)item.getKey()+"="+(String)item.getValue()) ;
+					config.put((String)item.getKey(), (String)defaults.get(item.getKey()));
 				}
 			}
 		} catch (IOException e) {
@@ -158,21 +158,20 @@ public class Init {
 	}
 
 	public Map<String, String> getConfig() {
-		config = new HashMap<>();
-		config.put("scanalyzer.port", "8080");
-		config.put("scanalyzer.bind", "127.0.0.1");
-		config.put("scanalyzer.threads", "5");
-		parseArgs(args);
 
-		try {
-			this.loadConfigFile();
-		} catch (Exception e) {
-			LOG.error(e.getLocalizedMessage(), e) ;
-		}
+		Map<String, String> config = new ConcurrentHashMap<>(10) ;
+		
+		parseArgs(config, args);
 
 		// Set default values for any configurations settings which were not
 		// previously configured.
-		doDefaultSettings();
+		doDefaultSettings(config) ;
+
+		try {
+			this.loadConfigFile(config);
+		} catch (Exception e) {
+			LOG.error(e.getLocalizedMessage(), e) ;
+		}
 
 		for (String key: config.keySet()) {
 			System.out.println(key+"="+config.get(key)) ;

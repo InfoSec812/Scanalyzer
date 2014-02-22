@@ -49,7 +49,6 @@ public class UserRoleRequestWrapper extends HttpServletRequestWrapper {
 
 	public UserRoleRequestWrapper(String login, String password, HttpServletRequest request) {
 		super(request);
-		LOG = LoggerFactory.getLogger(UserRoleRequestWrapper.class) ;
 		
 		if (login!=null && login.trim().length()>0 && password!=null && password.trim().length()>0) {
 			EntityManager em = WebContext.getEntityManager() ;
