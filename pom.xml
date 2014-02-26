@@ -121,6 +121,14 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>io.hawt</groupId>
+				<artifactId>hawtio-maven-plugin</artifactId>
+				<version>1.2.2</version>
+				<configuration>
+					<mainClass>com.zanclus.scanalyzer.Scanalyzer</mainClass>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<repositories>
