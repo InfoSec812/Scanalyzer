@@ -173,8 +173,8 @@ public class Init {
 			LOG.error(e.getLocalizedMessage(), e) ;
 		}
 
-		for (String key: config.keySet()) {
-			System.out.println(key+"="+config.get(key)) ;
+		for (Map.Entry<String,String> entry: config.entrySet()) {
+			System.out.println(entry.getKey()+"="+entry.getValue()) ;
 		}
 
 		return config ;

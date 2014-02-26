@@ -233,8 +233,7 @@ public class HostService {
 				throw new WebApplicationException(t, Status.INTERNAL_SERVER_ERROR) ;
 			}
 			
-			Response retVal = Response.status(202).build() ;
-			return retVal ;
+			return Response.status(202).build() ;
 		}
 	}
 
@@ -255,9 +254,8 @@ public class HostService {
 			HostDAO dao = new HostDAO(up.getUser()) ;
 			Host updatedHost = dao.update(updates) ;
 			Auditor.writeAuditEntry(up.getUser(), "update", Host.class, updatedHost) ;
-			
-			Response retVal = Response.status(204).entity(updatedHost).build() ;
-			return retVal ;
+
+			return Response.status(204).entity(updatedHost).build() ;
 		}
 	}
 }

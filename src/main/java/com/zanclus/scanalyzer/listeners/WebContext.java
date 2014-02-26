@@ -91,9 +91,6 @@ public class WebContext implements ServletContextListener {
 	}
 
 	public static EntityManager getEntityManager() {
-		if (WebContext.emf == null) {
-			throw new IllegalStateException("ServletContext has not yet been initialized!") ;
-		}
 		return WebContext.emf.createEntityManager() ;
 	}
 

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.services;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,11 +15,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -97,9 +91,8 @@ public class UserService {
 				User target = dao.findById(id) ;
 				Auditor.writeAuditEntry(up.getUser(), "delete", User.class, target) ;
 				dao.delete(id) ;
-				
-				Response retVal = new ResponseBuilderImpl().status(202).build() ;
-				return retVal ;
+
+				return Response.status(202).build() ;
 			} else {
 				throw new WebApplicationException(Status.UNAUTHORIZED) ;
 			}

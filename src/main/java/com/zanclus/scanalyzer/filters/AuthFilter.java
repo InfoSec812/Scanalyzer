@@ -18,22 +18,26 @@ public class AuthFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException {
 		String token = ((HttpServletRequest)request).getHeader("api_key") ;
+		UserRoleRequestWrapper wrapper = null ;
 		if (token==null || token.trim().length()<1) {
 			String login = ((HttpServletRequest)request).getHeader("login") ;
 			String password = ((HttpServletRequest)request).getHeader("password") ;
-			chain.doFilter(new UserRoleRequestWrapper(login, password, (HttpServletRequest)request), response);
+			wrapper = new UserRoleRequestWrapper(login, password, (HttpServletRequest)request) ;
 		} else {
-			chain.doFilter(new UserRoleRequestWrapper(token, (HttpServletRequest)request), response) ;
+			wrapper = new UserRoleRequestWrapper(token, (HttpServletRequest)request) ;
+		}
+		try {
+			chain.doFilter(wrapper, response);
+		} catch (IOException e) {
+			throw new ServletException(e) ;
 		}
 	}
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-		
+		// Intentionally left blank
 	}
 
 }

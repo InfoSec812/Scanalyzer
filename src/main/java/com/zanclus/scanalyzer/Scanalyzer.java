@@ -38,15 +38,15 @@ import com.zanclus.scanalyzer.servlets.StaticContentServlet;
  */
 public class Scanalyzer {
 
-	private static Map<String, String> config;
+	private static Map<String, String> config ;
 
-	private static final Logger LOG = LoggerFactory.getLogger(Scanalyzer.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Scanalyzer.class) ;
 
 	/**
 	 * Private constructor for application startup class.
 	 */
 	private Scanalyzer() {
-		super();
+		super() ;
 	}
 
 	/**
@@ -61,28 +61,28 @@ public class Scanalyzer {
 	public static void main(String[] args) {
 
 		// Parse the command-line arguments
-		Init init = new Init(args);
-		config = init.getConfig();
+		Init init = new Init(args) ;
+		config = init.getConfig() ;
 
 		if (!init.shouldExit()) {
 			// Start up the embedded Jetty Servlet container
 			Server server = new Server(Integer.parseInt(config
-					.get("scanalyzer.port")));
-			ServletContextHandler context = new ServletContextHandler();
-			context.setContextPath("/*");
+					.get("scanalyzer.port"))) ;
+			ServletContextHandler context = new ServletContextHandler() ;
+			context.setContextPath("/*") ;
 			context.setAttribute("config", config);
-			server.setHandler(context);
+			server.setHandler(context) ;
 			// Add a ServletContextListener for some shared resources which are
 			// expensive to generate
-			context.addEventListener(new WebContext());
+			context.addEventListener(new WebContext()) ;
 			// Add an instance of the Jersey servlet for ReST
-			context.addServlet(createJerseyServlet(), "/rest/*");
+			context.addServlet(createJerseyServlet(), "/rest/*") ;
 			// Add an instance of the Swagger servlet to provide a nice UI for
 			// the API
-			context.addServlet(createSwaggerServlet(), "/api/*");
+			context.addServlet(createSwaggerServlet(), "/api/*") ;
 			// Add a static content server so that we can include the Swagger UI
 			// in the executable JAR
-			context.addServlet(createStaticServlet(), "/static/*");
+			context.addServlet(createStaticServlet(), "/static/*") ;
 			// Add a filter to handle attaching a user Principal to
 			// authenticated requests
 			context.addFilter(createAuthFilter(), "/rest/*",
@@ -90,13 +90,13 @@ public class Scanalyzer {
 			// Add a CORS filter to allow Swagger UI to work when NOT accessed
 			// inside of the application
 			FilterHolder corsFilter = new FilterHolder(new CrossOriginFilter());
-			corsFilter.setInitParameter("allowedOrigins", "*");
+			corsFilter.setInitParameter("allowedOrigins", "*") ;
 			corsFilter
 					.setInitParameter("allowedMethods", "GET,POST,PUT,DELETE");
 			context.addFilter(corsFilter, "/*",
-					EnumSet.of(DispatcherType.REQUEST));
+					EnumSet.of(DispatcherType.REQUEST)) ;
 			context.addFilter(createAuthFilter(), "/*",
-					EnumSet.of(DispatcherType.REQUEST));
+					EnumSet.of(DispatcherType.REQUEST)) ;
 			// Start Jetty embedded
 			try {
 				server.start();
@@ -104,11 +104,11 @@ public class Scanalyzer {
 				// needs access
 				// to the ServletContextListener's state information
 				// Start the scanning poller
-				startPollingScheduler();
+				startPollingScheduler() ;
 				// Join the Jetty master thread and wait for it to exit.
-				server.join();
+				server.join() ;
 			} catch (Exception e) {
-				LOG.error("Unable to launch the Jetty servlet container.", e);
+				LOG.error("Unable to launch the Jetty servlet container.", e) ;
 			}
 		}
 	}
