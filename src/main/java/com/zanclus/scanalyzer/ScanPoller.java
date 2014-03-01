@@ -3,15 +3,12 @@ package com.zanclus.scanalyzer;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-
 import javax.persistence.EntityManager;
-
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.zanclus.scanalyzer.domain.entities.Host;
 import com.zanclus.scanalyzer.listeners.WebContext;
 

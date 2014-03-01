@@ -8,6 +8,9 @@ import javax.persistence.NoResultException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import net.gescobar.jmx.annotation.Description;
+import net.gescobar.jmx.annotation.ManagedAttribute;
+
 import com.zanclus.scanalyzer.domain.entities.Host;
 import com.zanclus.scanalyzer.domain.entities.User;
 import com.zanclus.scanalyzer.listeners.WebContext;
@@ -18,8 +21,20 @@ import com.zanclus.scanalyzer.listeners.WebContext;
  * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  *
  */
+@Description("This is a DAO for host entities.")
 public class HostDAO extends GenericDAO<Host, Long> {
 	private User user ;
+	private int requestCount ;
+
+	
+	@ManagedAttribute(description="Number of requests to this DAO", readable=true, writable=false)
+	public int getRequestCount() {
+		return requestCount;
+	}
+
+	public void setRequestCount(int requestCount) {
+		this.requestCount = requestCount;
+	}
 
 	public HostDAO() {
 		super() ;
@@ -40,6 +55,7 @@ public class HostDAO extends GenericDAO<Host, Long> {
 
 	@Override
 	public Host findById(Long id) {
+		requestCount++ ;
 		if (this.user==null) {
 			throw new WebApplicationException(Status.UNAUTHORIZED) ;
 		} else {

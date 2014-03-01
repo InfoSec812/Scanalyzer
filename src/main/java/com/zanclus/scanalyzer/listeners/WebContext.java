@@ -5,15 +5,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
 import net.gescobar.jmx.Management;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.zanclus.scanalyzer.ScanRunner;
+import com.zanclus.scanalyzer.domain.access.HostDAO;
 import com.zanclus.scanalyzer.domain.entities.User;
 import com.zanclus.scanalyzer.managment.ScanPool;
 
@@ -53,6 +58,7 @@ public class WebContext implements ServletContextListener {
 
 		try {
 			Management.register(new ScanPool(), "com.zanclus.scanalyzer:type=ScanPool") ;
+			Management.register(new HostDAO(), "com.zanclus.scanalyzer:type=HostDAO") ;
 		} catch (Exception e) {
 			LOG.warn("Unable to register management bean for ScanPool", e) ;
 		}

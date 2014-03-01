@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -21,10 +20,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.zanclus.scanalyzer.domain.access.HostDAO;
 import com.zanclus.scanalyzer.domain.access.PortsDAO;
 import com.zanclus.scanalyzer.domain.access.ScanDAO;
