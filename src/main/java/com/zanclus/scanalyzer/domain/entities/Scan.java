@@ -46,9 +46,6 @@ import lombok.experimental.Builder;
 @ApiModel(value="The complete output from NMAP for a given scan run")
 public class Scan implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -1052090085773740172L;
 
 	@Id

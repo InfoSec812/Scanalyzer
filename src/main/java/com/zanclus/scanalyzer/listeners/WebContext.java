@@ -5,18 +5,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
 import net.gescobar.jmx.Management;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.zanclus.scanalyzer.ScanRunner;
 import com.zanclus.scanalyzer.domain.access.HostDAO;
 import com.zanclus.scanalyzer.domain.entities.User;

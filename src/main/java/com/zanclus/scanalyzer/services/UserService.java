@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.services;
 
 import javax.servlet.http.HttpServletRequest;
