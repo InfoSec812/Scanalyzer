@@ -1,13 +1,9 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.domain.access;
 
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
-
 import com.zanclus.scanalyzer.domain.entities.Host;
 import com.zanclus.scanalyzer.domain.entities.Scan;
 import com.zanclus.scanalyzer.domain.entities.User;

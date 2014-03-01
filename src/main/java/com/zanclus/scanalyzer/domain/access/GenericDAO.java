@@ -2,12 +2,7 @@ package com.zanclus.scanalyzer.domain.access;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-
 import javax.persistence.EntityManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.zanclus.scanalyzer.listeners.WebContext;
 
 /**
@@ -20,7 +15,6 @@ public class GenericDAO<T, K extends Serializable> {
 
 	protected EntityManager em ;
 	protected Class<T> entityClass ;
-	protected static final Logger LOG = LoggerFactory.getLogger(GenericDAO.class) ;
 
 	@SuppressWarnings("unchecked")
 	public GenericDAO() {

@@ -3,6 +3,9 @@ package com.zanclus.scanalyzer.domain.access;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.zanclus.scanalyzer.domain.entities.Token;
 import com.zanclus.scanalyzer.domain.entities.User;
 import com.zanclus.scanalyzer.listeners.WebContext;
@@ -14,6 +17,7 @@ import com.zanclus.scanalyzer.listeners.WebContext;
 public class UserDAO extends GenericDAO<User, Long> {
 
 	private User user ;
+	private static final Logger LOG = LoggerFactory.getLogger(UserDAO.class) ;
 
 	public UserDAO(User user) {
 		super() ;

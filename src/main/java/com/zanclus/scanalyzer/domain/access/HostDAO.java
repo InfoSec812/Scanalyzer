@@ -8,6 +8,9 @@ import javax.persistence.NoResultException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.gescobar.jmx.annotation.Description;
 import net.gescobar.jmx.annotation.ManagedAttribute;
 
@@ -25,6 +28,7 @@ import com.zanclus.scanalyzer.listeners.WebContext;
 public class HostDAO extends GenericDAO<Host, Long> {
 	private User user ;
 	private int requestCount ;
+	private static final Logger LOG = LoggerFactory.getLogger(HostDAO.class) ;
 
 	
 	@ManagedAttribute(description="Number of requests to this DAO", readable=true, writable=false)

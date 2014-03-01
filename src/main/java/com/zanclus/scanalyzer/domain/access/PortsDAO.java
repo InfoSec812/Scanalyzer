@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.zanclus.scanalyzer.domain.access;
 
 import java.util.List;
