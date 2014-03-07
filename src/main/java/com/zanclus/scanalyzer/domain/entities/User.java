@@ -1,8 +1,10 @@
 package com.zanclus.scanalyzer.domain.entities;
 
 import java.io.Serializable;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,12 +18,15 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Builder;
@@ -38,7 +43,7 @@ import static javax.persistence.CascadeType.ALL;
 @Builder
 @XmlRootElement(name="user")
 @ApiModel(value="A User of this service.")
-public class User implements Serializable {
+public class User implements Serializable, AccessControlledEntity {
 
 	/**
 	 * 
@@ -132,5 +137,23 @@ public class User implements Serializable {
 	@XmlTransient
 	public List<Token> getTokens() {
 		return tokens ;
+	}
+
+	@Override
+	public boolean canRead(UserPrincipal principal) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canWrite(UserPrincipal principal) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canModify(UserPrincipal principal) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

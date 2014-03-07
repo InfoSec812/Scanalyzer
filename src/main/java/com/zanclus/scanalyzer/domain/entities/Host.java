@@ -51,7 +51,7 @@ import lombok.experimental.Builder;
 @XmlRootElement(name="host")
 @JsonRootName("host")
 @ApiModel(value="A host represents a single address which is accessible either on the local network or the Internet")
-public class Host implements Serializable {
+public class Host implements Serializable, AccessControlledEntity {
 
 	/**
 	 * 

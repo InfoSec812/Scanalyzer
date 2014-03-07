@@ -19,7 +19,7 @@ import com.zanclus.scanalyzer.listeners.WebContext;
  * to try to fetch what ever the container has set for us. This is intended to
  * be created and used by the UserRoleFilter.
  * 
- * @author thein
+ * @author <a href="https://github.com/InfoSec812">Deven Phillips</a>
  * 
  */
 public class UserRoleRequestWrapper extends HttpServletRequestWrapper {

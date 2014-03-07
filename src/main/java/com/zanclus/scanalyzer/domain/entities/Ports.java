@@ -9,10 +9,13 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.zanclus.scanalyzer.domain.entities.Host;
 import com.zanclus.scanalyzer.serialization.DateAdapter;
 import com.zanclus.scanalyzer.serialization.JacksonDateSerializer;
+
 import java.io.Serializable;
 import java.lang.Long;
 import java.lang.String;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.Date;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,6 +23,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,7 +42,7 @@ import lombok.experimental.Builder;
 @XmlRootElement(name="ports")
 @XmlType(propOrder={"id", "hostId", "scanTime", "portStatus"})
 @ApiModel(value="A text list of ports which were detected for a given scanning run for a given host.")
-public class Ports implements Serializable {
+public class Ports implements Serializable, AccessControlledEntity {
 
 	private static final long serialVersionUID = -6613411551243528421L;
 	
@@ -85,5 +89,23 @@ public class Ports implements Serializable {
 	@JsonProperty(value="hostId")
 	public Long getHostId() {
 		return host.getId() ;
+	}
+
+	@Override
+	public boolean canRead(UserPrincipal principal) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canWrite(UserPrincipal principal) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canModify(UserPrincipal principal) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

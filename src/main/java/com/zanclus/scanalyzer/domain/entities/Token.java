@@ -1,7 +1,9 @@
 package com.zanclus.scanalyzer.domain.entities;
 
 import java.io.Serializable;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.UUID;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
 import lombok.Data;
 
 /**
@@ -19,7 +22,7 @@ import lombok.Data;
 @Entity
 @Table(name="tokens")
 @Data
-public class Token implements Serializable {
+public class Token implements Serializable, AccessControlledEntity {
 
 	/**
 	 * 
@@ -37,5 +40,23 @@ public class Token implements Serializable {
 
 	public String getUser() {
 		return "/rest/user/"+user.getId() ;
+	}
+
+	@Override
+	public boolean canRead(UserPrincipal principal) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canWrite(UserPrincipal principal) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canModify(UserPrincipal principal) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
